@@ -5,8 +5,9 @@ Program mcmc
   !####################
 
   use input
+  use subroutines 
   !use arrays
-  !use functions 
+
 
   !#####################
   ! VARIABLES DECLARATION
@@ -16,4 +17,7 @@ Program mcmc
 
   !Integer*4                              :: m,n,i   ! COUNTERS FOR LOOPS
 
+  call create_directories_if_needed()
+
+  
 End Program mcmc
