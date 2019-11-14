@@ -71,6 +71,8 @@ Program mcmc
      
   End Do
 
+  write(UNIT_FILE1,*) 'CODE SUCCESSFULLY ENDS EXECUTION'
+  
   call fgsl_rng_free(r)
   
   close(UNIT_FILE1)

@@ -116,6 +116,155 @@ contains
     Else if (likelihood .eq. 'euclid') then
 
        write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+       
+       write(string,'(i2.2)') index
+
+       parameters(1)%name = 'omega_b'
+       parameters(1)%mean = 2.218d-2
+       parameters(1)%lower_limit = 
+       parameters(1)%upper_limit = 
+       parameters(1)%sigma = 
+       parameters(1)%scale = 
+       parameters(1)%latexname =
+  Real*8,parameter :: A_s = 2.12424d-9
+  Real*8,parameter :: H0 = 6.693d1
+  Real*8,parameter :: m_ncdm = 6.0d-2
+  Real*8,parameter :: N_ur = 2.0328d0
+  Real*8,parameter :: N_ncdm = 1.d0
+  Real*8,parameter :: deg_ncdm = 1.d0
+  Real*8,parameter :: tau = 5.96d-2
+  Real*8,parameter :: nc_bias_b0 = 1.0d0
+  Real*8,parameter :: cs2_fld = 4.3d0 ! 1.d0 ; 1.d-4 ; 1.d-6 ; 3.333334d0 ; 3.3334d0 ; 4.3d0 
+  Real*8,parameter :: w0_fld = -8.0d-1 
+  !Real*8,parameter :: wa_fld = 0.d0 
+  Real*8,parameter :: e_pi = 0.0d0
+  Real*8,parameter :: f_pi = 5.0d0 ! 0.d0 ; 5.d0
+  Real*8,parameter :: g_pi = 0.0d0 ! 0.d0 ; 1.d0 ! THIS IS ACTUALLY log10 g_pi
+
+       parameters(2)%name = 'omega_cdm'
+       parameters(2)%mean = 1.205d-1
+       parameters(2)%lower_limit = 
+       parameters(2)%upper_limit = 
+       parameters(2)%sigma = 
+       parameters(2)%scale = 
+       parameters(2)%latexname = 
+
+       parameters(3)%name = 'n_s'
+       parameters(3)%mean = 9.619d-1
+       parameters(3)%lower_limit = 
+       parameters(3)%upper_limit = 
+       parameters(3)%sigma = 
+       parameters(3)%scale = 
+       parameters(3)%latexname = 
+
+       parameters(4)%name = 'A_s'
+       parameters(4)%mean = 
+       parameters(4)%lower_limit = 
+       parameters(4)%upper_limit = 
+       parameters(4)%sigma = 
+       parameters(4)%scale = 
+       parameters(4)%latexname = 
+
+       parameters(5)%name = 'H0'
+       parameters(5)%mean = 
+       parameters(5)%lower_limit = 
+       parameters(5)%upper_limit = 
+       parameters(5)%sigma = 
+       parameters(5)%scale = 
+       parameters(5)%latexname = 
+
+       parameters(6)%name = 'm_ncdm'
+       parameters(6)%mean = 
+       parameters(6)%lower_limit = 
+       parameters(6)%upper_limit = 
+       parameters(6)%sigma = 
+       parameters(6)%scale = 
+       parameters(6)%latexname = 
+
+       parameters(7)%name = 'nc_bias_b0'
+       parameters(7)%mean = 
+       parameters(7)%lower_limit = 
+       parameters(7)%upper_limit = 
+       parameters(7)%sigma = 
+       parameters(7)%scale = 
+       parameters(7)%latexname = 
+
+       parameters(8)%name = 'cs2_fld'
+       parameters(8)%mean = 
+       parameters(8)%lower_limit = 
+       parameters(8)%upper_limit = 
+       parameters(8)%sigma = 
+       parameters(8)%scale = 
+       parameters(8)%latexname = 
+
+       parameters(9)%name = 'w0_fld'
+       parameters(9)%mean = 
+       parameters(9)%lower_limit = 
+       parameters(9)%upper_limit = 
+       parameters(9)%sigma = 
+       parameters(9)%scale = 
+       parameters(9)%latexname = 
+
+       If (number_of_parameters .eq. 10) then
+          
+          parameters(10)%name = 'e_pi'
+          parameters(10)%mean = 
+          parameters(10)%lower_limit = 
+          parameters(10)%upper_limit = 
+          parameters(10)%sigma = 
+          parameters(10)%scale = 
+          parameters(10)%latexname = 
+
+       Else if (number_of_parameters .eq. 11) then
+
+          parameters(10)%name = 'f_pi'
+          parameters(10)%mean = 
+          parameters(10)%lower_limit = 
+          parameters(10)%upper_limit = 
+          parameters(10)%sigma = 
+          parameters(10)%scale = 
+          parameters(10)%latexname = 
+
+          parameters(11)%name = 'g_pi'
+          parameters(11)%mean = 
+          parameters(11)%lower_limit = 
+          parameters(11)%upper_limit = 
+          parameters(11)%sigma = 
+          parameters(11)%scale = 
+          parameters(11)%latexname = 
+
+       End if
+
+       parameters(index)%name = 'p'//trim(string)//''
+       parameters(index)%mean = 0.d0
+       parameters(index)%lower_limit = -1.d1
+       parameters(index)%upper_limit = 1.d1
+       parameters(index)%sigma = 5.d-1
+       parameters(index)%scale = 1.d0
+       parameters(index)%latexname = 'p_{'//trim(string)//'}'
+
+
+
+
+
+  !################################################
+  ! 1-SIGMA VALUES FOR PARAMETERS IN FIDUCIAL MODEL
+  !################################################
+
+  Real*8,parameter :: sigma_omega_b = 1.5d-4
+  Real*8,parameter :: sigma_omega_cdm = 1.4d-3
+  Real*8,parameter :: sigma_n_s = 4.5d-3
+  Real*8,parameter :: sigma_A_s = 3.82d-11
+  Real*8,parameter :: sigma_H0 = 0.62d0
+  Real*8,parameter :: sigma_m_ncdm = 5.d-3
+  Real*8,parameter :: sigma_tau = 8.9d-3
+  Real*8,parameter :: sigma_nc_bias_b0 = 1.0d-1
+  Real*8,parameter :: sigma_cs2_fld = 1.0d-1
+  Real*8,parameter :: sigma_w0_fld = 2.2d-1
+  !Real*8,parameter :: sigma_wa_fld = 2.2d-1
+  Real*8,parameter :: sigma_e_pi = 1.0d-1
+  Real*8,parameter :: sigma_f_pi = 1.0d-1
+  Real*8,parameter :: sigma_g_pi = 1.0d0 ! THIS IS THE ERROR ON log10 g_pi 
 
        stop
        
