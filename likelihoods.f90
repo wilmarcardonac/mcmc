@@ -16,7 +16,9 @@ contains
     log_Gaussian_likelihood = 0.d0
     
     Do index=1,number_of_parameters
+       
        log_Gaussian_likelihood = array(index)**2 + log_Gaussian_likelihood
+       
     End Do
      
     log_Gaussian_likelihood = -log_Gaussian_likelihood/2.d0

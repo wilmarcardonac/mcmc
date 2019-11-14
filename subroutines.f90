@@ -105,8 +105,8 @@ contains
           
           parameters(index)%name = 'p'//trim(string)//''
           parameters(index)%mean = 0.d0
-          parameters(index)%lower_limit = -1.d0
-          parameters(index)%upper_limit = 1.d0
+          parameters(index)%lower_limit = -1.d1
+          parameters(index)%upper_limit = 1.d1
           parameters(index)%sigma = 5.d-1
           parameters(index)%scale = 1.d0
           parameters(index)%latexname = 'p_{'//trim(string)//'}'
@@ -142,23 +142,37 @@ contains
 
     If (likelihood .eq. 'gaussian') then
 
-       Do index1=1,number_of_parameters  
+       If (starting_cov_mat .eq. 'diagonal') then
 
-          Do index2=1,number_of_parameters 
+          Do index1=1,number_of_parameters  
 
-             If (index1 .eq. index2) then      
-                
-                Cov_mat(index1,index2) = parameters(index1)%sigma*parameters(index2)%sigma
+             Do index2=1,number_of_parameters 
 
-             Else 
+                If (index1 .eq. index2) then      
 
-                Cov_mat(index1,index2) = 0.d0
+                   Cov_mat(index1,index2) = parameters(index1)%sigma*parameters(index2)%sigma
 
-             End If
+                Else 
+
+                   Cov_mat(index1,index2) = 0.d0
+
+                End If
+
+             End Do
 
           End Do
 
-       End Do
+       Else if (starting_cov_mat .eq. 'given') then
+
+          call read_cov_mat()
+
+       Else
+
+          write(UNIT_FILE1,*) 'UNRECOGNISED OPTION FOR starting_cov_mat PARAMETER'
+
+          stop
+
+       End If
 
     Else if (likelihood .eq. 'euclid') then
 
@@ -179,10 +193,11 @@ contains
   subroutine set_starting_point()
 
     use input
+    use fgsl
     Implicit none
 
     Integer*4 :: index
-    
+
     write(UNIT_FILE1,*) 'STARTING POINT IS: '
     
     If (starting_point .eq. 'mean') then
@@ -195,15 +210,21 @@ contains
        
     Else if (starting_point .eq. 'bestfit') then
 
-       write(UNIT_FILE1,*) 'bestfit OPTION FOR starting_point PARAMETER NOT YET IMPLEMENTED'
+       call read_bestfit()
 
-       stop
+       Do index=1,number_of_parameters
+          
+          old_point(index) = bestfit_point(index)
+          
+       End Do
 
     Else if (starting_point .eq. 'random') then
 
-       write(UNIT_FILE1,*) 'random OPTION FOR starting_point PARAMETER NOT YET IMPLEMENTED'
-
-       stop
+       Do index=1,number_of_parameters
+          
+          old_point(index) = fgsl_ran_flat (r, parameters(index)%lower_limit, parameters(index)%upper_limit)  
+          
+       End Do
 
     Else if (starting_point .eq. 'last_point') then
 
@@ -251,5 +272,539 @@ contains
     close(UNIT_FILE3)
 
   end subroutine create_getdist_files
+
+  subroutine compute_theoretical_model()
+
+    use input
+
+    Implicit none
+
+    If (likelihood .eq. 'gaussian') then
+
+       continue
+       
+    Else if (likelihood .eq. 'euclid') then
+
+       write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+
+       stop    
+       
+    End if
+    
+  end subroutine compute_theoretical_model
+
+  subroutine compute_ln_likelihood(point,lnlikelihood)
+
+    use input
+    use likelihoods
+    
+    Implicit none
+
+    Integer*4 :: index
+    Real*8,dimension(number_of_parameters) :: point
+    Real*8 :: lnlikelihood
+    Logical :: plausible_parameters
+    Logical,dimension(number_of_parameters) :: plausibility
+
+    Do index=1,number_of_parameters
+
+       plausibility(index) = (point(index) .lt. parameters(index)%lower_limit) .or. &
+            (point(index) .gt. parameters(index)%upper_limit) 
+
+       If (plausibility(index)) then
+
+          plausible_parameters = .false.
+
+          exit
+
+       Else
+
+          plausible_parameters = .true.
+          
+       End if
+       
+    End Do
+
+    If (plausible_parameters) then
+       
+       If (likelihood .eq. 'gaussian') then
+
+          lnlikelihood = log_Gaussian_likelihood(point)
+
+       Else if (likelihood .eq. 'euclid') then
+
+          write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+
+          stop    
+
+       End If
+
+    Else
+
+       lnlikelihood = -1.d10
+       
+    End If
+    
+  end subroutine compute_ln_likelihood
+
+  subroutine generate_new_point_in_parameter_space()
+
+    use input
+    use fgsl
+
+    Implicit none
+
+    integer(fgsl_size_t), parameter :: n = number_of_parameters 
+    type(fgsl_matrix) :: a
+    type(fgsl_vector) :: b, x
+    integer(fgsl_int) :: status
+    real(fgsl_double), target :: af(n, n), bf(n), xf(n)
+    
+    a = fgsl_matrix_init(type=1.0_fgsl_double)
+    b = fgsl_vector_init(type=1.0_fgsl_double)
+    x = fgsl_vector_init(type=1.0_fgsl_double)
+
+    af = Cov_mat
+
+    bf = old_point
+    
+    status = fgsl_matrix_align(af, n, n, n, a)
+    status = fgsl_vector_align(bf, n, b, n, 0_fgsl_size_t, 1_fgsl_size_t)
+    status = fgsl_vector_align(xf, n, x, n, 0_fgsl_size_t, 1_fgsl_size_t)
+    status = fgsl_linalg_cholesky_decomp1(a)
+
+    status = fgsl_ran_multivariate_gaussian(r,b,a,x)
+
+    current_point = xf
+    
+    call fgsl_matrix_free(a)
+    call fgsl_vector_free(b)
+    call fgsl_vector_free(x)
+    
+  end subroutine generate_new_point_in_parameter_space
+
+  subroutine take_decision_about_current_point(m)
+
+    use input
+    use fgsl
+
+    Implicit none
+
+    Integer*4 :: m
+
+    If (current_loglikelihood .ge. old_loglikelihood) then ! ACCEPTS CURRENT POINT 
+
+       number_accepted_points = number_accepted_points + 1    
+
+       acceptance_probability(m) = min(1.d0,exp(current_loglikelihood - old_loglikelihood))    
+
+       If (m .le. steps_taken_before_definite_run) then
+
+          write(UNIT_FILE5,*) weight,-old_loglikelihood,old_point(1:number_of_parameters)
+
+       Else
+
+          write(UNIT_FILE4,*) weight,-old_loglikelihood,old_point(1:number_of_parameters)
+
+       End If
+
+       weight = 1    
+
+       old_loglikelihood = current_loglikelihood
+
+       old_point = current_point
+
+    Else 
+
+       random_uniform = fgsl_ran_flat (r, 0.d0 , 1.d0) 
+
+       If ( random_uniform .le. exp(current_loglikelihood-old_loglikelihood)) then ! ACCEPT CURRENT POINT
+
+          number_accepted_points = number_accepted_points + 1 
+
+          acceptance_probability(m) = min(1.d0,exp(current_loglikelihood - old_loglikelihood))    
+
+          If (m .le. steps_taken_before_definite_run) then
+          
+             write(UNIT_FILE5,*) weight,-old_loglikelihood,old_point(1:number_of_parameters)
+          
+          else
+
+             write(UNIT_FILE4,*) weight,-old_loglikelihood,old_point(1:number_of_parameters)
+
+          End If
+
+          weight = 1
+
+          old_loglikelihood = current_loglikelihood
+
+          old_point = current_point
+
+       Else   ! REJECT CURRENT POINT 
+
+          If (m .gt. steps_taken_before_definite_run) then
+
+             number_rejected_points = number_rejected_points + 1            
+
+          End If
+
+          acceptance_probability(m) = min(1.d0,exp(current_loglikelihood - old_loglikelihood))    
+
+          weight = weight + 1
+
+       End If
+
+    End If
+
+  end subroutine take_decision_about_current_point
+
+  subroutine update_covariance_matrix(m)
+
+    use input
+
+    Implicit none
+
+    Integer*4 :: m
+    
+    If ((mod(m,jumping_factor_update) .eq. 0) .and. (m .le. steps_taken_before_definite_run) ) then
+
+       average_ap = sum(acceptance_probability(m-jumping_factor_update+1:m))&
+            /real(jumping_factor_update)
+
+       If (average_ap .lt. lower_limit_ap) then ! DECREASE STEP SIZE
+
+          jumping_factor = (1.d0 - step_size_changes)  
+
+          Cov_mat = jumping_factor*Cov_mat
+
+       Else if (average_ap .gt. upper_limit_ap) then ! INCREASE STEP SIZE 
+
+          jumping_factor = (1.d0 + step_size_changes)     
+
+          Cov_mat = jumping_factor*Cov_mat
+          
+       End If
+
+       bad_ap = (average_ap .lt. lower_limit_ap) .or. (average_ap .gt. upper_limit_ap)
+
+       If ( (mod(m,covariance_matrix_update) .eq. 0) .and. bad_ap ) then
+
+          call stat(CHAIN_FILE_AUX,buff,status1)
+
+          If ((status1 .eq. 0) .and. (buff(8) .gt. 0)) then
+             
+             close(UNIT_FILE5)
+
+             call compute_cov_mat()
+          
+             call system('rm '//trim(CHAIN_FILE_AUX)//' ')
+
+             open(UNIT_FILE5,file=CHAIN_FILE_AUX)
+
+          End If
+
+       End If
+
+       call write_cov_mat()
+
+       write(UNIT_FILE1,*) 'CURRENT AVERAGE ACCEPTANCE PROBABILITY IS: ',average_ap
+
+    Else if ((mod(m,steps_taken_before_definite_run) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
+
+       average_ap = sum(acceptance_probability(m-steps_taken_before_definite_run+1:m))&
+            /real(steps_taken_before_definite_run)
+
+       bad_ap = (average_ap .lt. lower_limit_ap) .or. (average_ap .gt. upper_limit_ap)
+
+       If (bad_ap) then
+          
+          write(UNIT_FILE1,*) 'BAD CURRENT AVERAGE ACCEPTANCE PROBABILITY: ',average_ap
+
+          call write_bestfit()
+          
+          stop
+
+       End If
+       
+    End If
+    
+  end subroutine update_covariance_matrix
+
+  subroutine compute_cov_mat()
+
+    use input
+    use fgsl
+    
+    Implicit none
+
+    Integer*8 :: arrays_dimension,p,index,index2,index_bestfit
+    Integer :: stat
+    Real*8,allocatable,dimension(:,:) :: parameters_vector
+    Real*8,allocatable, dimension(:) :: lnlkl_vector    
+    Integer*4,allocatable, dimension(:) :: weight_vector
+    real(fgsl_double),allocatable,dimension(:,:) :: data_fgsl,data2_fgsl
+    real(fgsl_double),allocatable,dimension(:) :: data4_fgsl
+    real(fgsl_double),allocatable,dimension(:,:,:) :: data3_fgsl
+    real(fgsl_double),dimension(number_of_parameters) :: mean_fgsl
+    real(fgsl_double) :: minlnlkl
+    real(fgsl_double),dimension(number_of_parameters,number_of_parameters) :: matrix
+    integer(fgsl_size_t), parameter :: n = number_of_parameters
+    integer(fgsl_int) :: status,signum
+    type(fgsl_matrix) :: a
+    real(fgsl_double), target :: af(n, n)
+    type(fgsl_permutation) :: q
+    real(fgsl_double) :: det_matrix
+    
+    a = fgsl_matrix_init(type=1.0_fgsl_double)
+    q = fgsl_permutation_alloc(n)
+    
+    open(UNIT_FILE6,file=CHAIN_FILE_AUX)
+
+    arrays_dimension = 0
+
+    Do 
+
+       read(UNIT_FILE6,*,iostat=stat)
+
+       If (stat .ne. 0) then
+
+          exit
+
+       Else
+
+          arrays_dimension = arrays_dimension + 1 
+
+       End If
+
+    End Do
+
+    close(UNIT_FILE6)
+
+    allocate (parameters_vector(1:number_of_parameters,1:arrays_dimension),&
+         data2_fgsl(1:number_of_parameters,1:arrays_dimension),&
+         data3_fgsl(1:number_of_parameters,1:number_of_parameters,1:arrays_dimension),&
+         weight_vector(1:arrays_dimension),lnlkl_vector(1:arrays_dimension),&
+         data_fgsl(1:number_of_parameters,1:arrays_dimension),&
+         data4_fgsl(1:arrays_dimension),stat=status1)
+
+    open(UNIT_FILE6,file=CHAIN_FILE_AUX)
+
+    Do p=1,arrays_dimension
+
+       read(UNIT_FILE6,*) weight_vector(p),lnlkl_vector(p),parameters_vector(1:number_of_parameters,p)
+
+    End Do
+
+    close(UNIT_FILE6)
+
+    Do index=1,number_of_parameters
+       
+       Do p=1,arrays_dimension
+
+          data_fgsl(index,p) = parameters_vector(index,p)
+
+          If (index .eq. 1) then
+             
+             data4_fgsl(p) = lnlkl_vector(p)
+             
+          End if
+          
+       End Do
+
+       mean_fgsl(index) = fgsl_stats_mean(data_fgsl(index,:), 1_fgsl_size_t, arrays_dimension)
+       
+    End Do
+
+    minlnlkl = fgsl_stats_min(data4_fgsl(:), 1_fgsl_size_t, arrays_dimension)
+
+    Do p=1,arrays_dimension
+
+       If (minlnlkl .eq. data4_fgsl(p)) then
+
+          index_bestfit = p
+
+          exit
+          
+       End If
+       
+    End Do
+    
+    Do index=1,number_of_parameters
+
+       bestfit_point(index) = parameters_vector(index,index_bestfit)
+       
+       Do p=1,arrays_dimension
+
+          data2_fgsl(index,p) = data_fgsl(index,p) - mean_fgsl(index)
+          
+       End Do
+
+    End Do
+
+    write(UNIT_FILE1,*) 'CURRENT MIN CHI^2/2 IS: ', minlnlkl
+
+    write(UNIT_FILE1,*) 'CURRENT BESTFIT IS: ', bestfit_point
+    
+    Do index=1,number_of_parameters
+
+       Do index2=1,number_of_parameters
+
+          Do p=1,arrays_dimension
+             
+             data3_fgsl(index,index2,p) = data2_fgsl(index,p)*data2_fgsl(index2,p)
+
+          End Do
+
+       End Do
+
+    End Do
+    
+    Do index=1,number_of_parameters
+
+       Do index2=1,number_of_parameters
+
+          matrix(index,index2) = fgsl_stats_mean(data3_fgsl(index,index2,:), 1_fgsl_size_t, arrays_dimension) 
+          
+       End Do
+
+    End Do
+    
+    deallocate(parameters_vector,weight_vector,lnlkl_vector,data_fgsl,data2_fgsl,data3_fgsl,data4_fgsl)
+
+    af = matrix
+
+    status = fgsl_matrix_align(af, n, n, n, a)
+    status = fgsl_linalg_LU_decomp (a, q, signum)
+
+    det_matrix = fgsl_linalg_LU_det(a,signum)
+
+    If (abs(det_matrix) .gt. 0.d0) then
+    
+       Cov_mat = matrix
+
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX UPDATED'
+       
+    Else
+
+       write(UNIT_FILE1,*) 'SINGULAR COVARIANCE MATRIX FOUND. COVARIANCE MATRIX WAS NOT UPDATED'
+       
+    End If
+
+    call fgsl_matrix_free(a)
+    call fgsl_permutation_free(q)
+
+  end subroutine compute_cov_mat
+
+  subroutine write_cov_mat()
+
+    use input
+
+    Implicit none
+
+    Integer*4 :: index1
+    Character*16 :: fmt
+    Character*16 :: string
+
+    write(string,'(i2)') number_of_parameters
+
+    fmt = '('//trim(string)//'es16.7)'
+
+    open(UNIT_FILE7,file=COVMAT_FILE_AUX)
+
+    Do index1=1,number_of_parameters
+
+       write(UNIT_FILE7,fmt) Cov_mat(index1,1:number_of_parameters)
+
+    End Do
+
+    close(UNIT_FILE7)
+
+  end subroutine write_cov_mat
+
+  subroutine read_cov_mat()
+    
+    use input
+    
+    Implicit none
+    
+    Integer*4 :: index1
+    Logical :: exist 
+
+    inquire(file=COVMAT_FILE,exist=exist)
+
+    If (exist) then
+
+       open(UNIT_FILE6,file=COVMAT_FILE)
+
+       Do index1=1,number_of_parameters
+
+          read(UNIT_FILE6,*) Cov_mat(index1,1:number_of_parameters)
+
+       End Do
+
+       close(UNIT_FILE6)
+       
+    Else
+
+       write(UNIT_FILE1,*) 'NO COVARIANCE MATRIX FOUND IN COVMAT FOLDER'
+
+       stop
+
+    End If
+
+  end subroutine read_cov_mat
+
+  subroutine read_bestfit()
+    
+    use input
+    
+    Implicit none
+    
+    Integer*4 :: index1
+    Logical :: exist
+
+    inquire(file=BESTFIT_FILE,exist=exist)
+
+    If (exist) then
+       
+       open(UNIT_FILE8,file=BESTFIT_FILE)
+
+       Do index1=1,number_of_parameters
+
+          read(UNIT_FILE8,*) bestfit_point(index1)
+
+       End Do
+
+       close(UNIT_FILE8)
+
+    Else
+
+       write(UNIT_FILE1,*) 'NO BESTFIT FILE FOUND IN BESTFIT FOLDER'
+
+       stop
+
+    End if
+
+  end subroutine read_bestfit
+
+  subroutine write_bestfit()
+    
+    use input
+    
+    Implicit none
+    
+    Integer*4 :: index1
+    
+    open(UNIT_FILE8,file=BESTFIT_FILE_AUX)
+    
+    Do index1=1,number_of_parameters
+       
+       write(UNIT_FILE8,'(es16.7)') bestfit_point(index1)
+       
+    End Do
+    
+    close(UNIT_FILE8)
+    
+  end subroutine write_bestfit
   
 End Module subroutines
