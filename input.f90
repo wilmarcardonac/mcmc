@@ -22,7 +22,7 @@ Module input
      Character(len=20) :: latexname
   end type parameters_mcmc
 
-  ! PARAMETERS 
+  ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'gaussian' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'bestfit' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
@@ -49,7 +49,7 @@ Module input
   Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
-  Real*8 :: jumping_factor = 1.d0 !2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
+  Real*8 :: jumping_factor = 2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
   Real*8 :: old_loglikelihood,current_loglikelihood      ! STORE LIKELIHOOD VALUES
   Real*4,dimension(number_iterations) :: acceptance_probability
   Real*4,parameter :: lower_limit_ap = 0.25! LOWER LIMIT ACCEPTANCE PROBABILITY
@@ -62,6 +62,13 @@ Module input
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
 
+  ! FIXED PARAMETERS IN CODE CLASS 
+  Real*8,parameter :: N_ur = 2.0328d0
+  Real*8,parameter :: N_ncdm = 1.d0
+  Real*8,parameter :: deg_ncdm = 1.d0
+  Real*8,parameter :: tau = 5.96d-2
+  !Real*8,parameter :: sigma_tau = 8.9d-3
+  
   ! PATHS TO FILES:
   Character(len=*),parameter :: OUTPUT = './output'
   Character(len=*),parameter :: CHAINS = './chains'

@@ -115,156 +115,139 @@ contains
        
     Else if (likelihood .eq. 'euclid') then
 
-       write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+       write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD'
        
-       write(string,'(i2.2)') index
-
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
-       parameters(1)%lower_limit = 
-       parameters(1)%upper_limit = 
-       parameters(1)%sigma = 
-       parameters(1)%scale = 
-       parameters(1)%latexname =
-  Real*8,parameter :: A_s = 2.12424d-9
-  Real*8,parameter :: H0 = 6.693d1
-  Real*8,parameter :: m_ncdm = 6.0d-2
-  Real*8,parameter :: N_ur = 2.0328d0
-  Real*8,parameter :: N_ncdm = 1.d0
-  Real*8,parameter :: deg_ncdm = 1.d0
-  Real*8,parameter :: tau = 5.96d-2
-  Real*8,parameter :: nc_bias_b0 = 1.0d0
-  Real*8,parameter :: cs2_fld = 4.3d0 ! 1.d0 ; 1.d-4 ; 1.d-6 ; 3.333334d0 ; 3.3334d0 ; 4.3d0 
-  Real*8,parameter :: w0_fld = -8.0d-1 
-  !Real*8,parameter :: wa_fld = 0.d0 
-  Real*8,parameter :: e_pi = 0.0d0
-  Real*8,parameter :: f_pi = 5.0d0 ! 0.d0 ; 5.d0
-  Real*8,parameter :: g_pi = 0.0d0 ! 0.d0 ; 1.d0 ! THIS IS ACTUALLY log10 g_pi
+       parameters(1)%lower_limit = 1.d-4
+       parameters(1)%upper_limit = 1.d-1
+       parameters(1)%sigma = 1.5d-4
+       parameters(1)%scale = 1.d0
+       parameters(1)%latexname = '\omega_b'
 
        parameters(2)%name = 'omega_cdm'
        parameters(2)%mean = 1.205d-1
-       parameters(2)%lower_limit = 
-       parameters(2)%upper_limit = 
-       parameters(2)%sigma = 
-       parameters(2)%scale = 
-       parameters(2)%latexname = 
+       parameters(2)%lower_limit = 1.d-4
+       parameters(2)%upper_limit = 1.d0
+       parameters(2)%sigma = 1.4d-3
+       parameters(2)%scale = 1.d0
+       parameters(2)%latexname = '\omega_{cdm}'
 
        parameters(3)%name = 'n_s'
        parameters(3)%mean = 9.619d-1
-       parameters(3)%lower_limit = 
-       parameters(3)%upper_limit = 
-       parameters(3)%sigma = 
-       parameters(3)%scale = 
-       parameters(3)%latexname = 
+       parameters(3)%lower_limit = 9.d-2
+       parameters(3)%upper_limit = 2.d0
+       parameters(3)%sigma = 4.5d-3
+       parameters(3)%scale = 1.d0
+       parameters(3)%latexname = 'n_s'
+
+       write(UNIT_FILE1,*) 'IMPLEMENT ln 10^10 A_s!'
+
+       stop
 
        parameters(4)%name = 'A_s'
-       parameters(4)%mean = 
-       parameters(4)%lower_limit = 
-       parameters(4)%upper_limit = 
-       parameters(4)%sigma = 
-       parameters(4)%scale = 
-       parameters(4)%latexname = 
+       parameters(4)%mean = 2.12424d-9
+       parameters(4)%lower_limit = 1.d-11
+       parameters(4)%upper_limit = 1.d-7
+       parameters(4)%sigma = 3.82d-11
+       parameters(4)%scale = 1.d0
+       parameters(4)%latexname = 'A_s'
 
        parameters(5)%name = 'H0'
-       parameters(5)%mean = 
-       parameters(5)%lower_limit = 
-       parameters(5)%upper_limit = 
-       parameters(5)%sigma = 
-       parameters(5)%scale = 
-       parameters(5)%latexname = 
+       parameters(5)%mean = 6.693d1
+       parameters(5)%lower_limit = 3.d1
+       parameters(5)%upper_limit = 9.d1
+       parameters(5)%sigma = 0.62d0
+       parameters(5)%scale = 1.d0
+       parameters(5)%latexname = 'H_0'
 
        parameters(6)%name = 'm_ncdm'
-       parameters(6)%mean = 
-       parameters(6)%lower_limit = 
-       parameters(6)%upper_limit = 
-       parameters(6)%sigma = 
-       parameters(6)%scale = 
-       parameters(6)%latexname = 
+       parameters(6)%mean = 6.0d-2
+       parameters(6)%lower_limit = 0.d0
+       parameters(6)%upper_limit = 2.d0
+       parameters(6)%sigma = 5.d-3
+       parameters(6)%scale = 1.d0
+       parameters(6)%latexname = 'm_{\nu}'
 
        parameters(7)%name = 'nc_bias_b0'
-       parameters(7)%mean = 
-       parameters(7)%lower_limit = 
-       parameters(7)%upper_limit = 
-       parameters(7)%sigma = 
-       parameters(7)%scale = 
-       parameters(7)%latexname = 
+       parameters(7)%mean = 1.0d0
+       parameters(7)%lower_limit = 0.d0
+       parameters(7)%upper_limit = 3.d0
+       parameters(7)%sigma = 1.0d-1
+       parameters(7)%scale = 1.d0
+       parameters(7)%latexname = 'b_0' 
 
-       parameters(8)%name = 'cs2_fld'
-       parameters(8)%mean = 
-       parameters(8)%lower_limit = 
-       parameters(8)%upper_limit = 
-       parameters(8)%sigma = 
-       parameters(8)%scale = 
-       parameters(8)%latexname = 
+       If (number_of_parameters .eq. 10) then
+
+          write(UNIT_FILE1,*) 'IMPLEMENT logcs2!'
+
+          stop
+
+          parameters(8)%name = 'cs2_fld'
+          parameters(8)%mean = 1.d0
+          parameters(8)%lower_limit = -1.d1
+          parameters(8)%upper_limit = 0.d0
+          parameters(8)%sigma = 1.0d-1
+          parameters(8)%scale = 1.d0
+          parameters(8)%latexname = 
+
+       Else if (number_of_parameters .eq. 11) then
+
+          write(UNIT_FILE1,*) 'IMPLEMENT logceff2!'
+
+          stop
+          
+          parameters(8)%name = 'cs2_fld' 
+          parameters(8)%mean = 4.3d0
+          parameters(8)%lower_limit = -3.d3
+          parameters(8)%upper_limit = 0.d0
+          parameters(8)%sigma = 1.0d-1
+          parameters(8)%scale = 1.d0
+          parameters(8)%latexname = '\log c_{eff}^2'
+
+       End if
 
        parameters(9)%name = 'w0_fld'
-       parameters(9)%mean = 
-       parameters(9)%lower_limit = 
-       parameters(9)%upper_limit = 
-       parameters(9)%sigma = 
-       parameters(9)%scale = 
-       parameters(9)%latexname = 
+       parameters(9)%mean = -8.0d-1
+       parameters(9)%lower_limit = -2.d0
+       parameters(9)%upper_limit = 0.d0
+       parameters(9)%sigma = 2.2d-1
+       parameters(9)%scale = 1.d0
+       parameters(9)%latexname = 'w'
 
        If (number_of_parameters .eq. 10) then
           
           parameters(10)%name = 'e_pi'
-          parameters(10)%mean = 
-          parameters(10)%lower_limit = 
-          parameters(10)%upper_limit = 
-          parameters(10)%sigma = 
-          parameters(10)%scale = 
-          parameters(10)%latexname = 
+          parameters(10)%mean = 0.0d0
+          parameters(10)%lower_limit = -5.d-1
+          parameters(10)%upper_limit = 5.d-1
+          parameters(10)%sigma = 1.0d-1
+          parameters(10)%scale = 1.d0
+          parameters(10)%latexname = 'e_{\pi}'
 
        Else if (number_of_parameters .eq. 11) then
 
           parameters(10)%name = 'f_pi'
-          parameters(10)%mean = 
-          parameters(10)%lower_limit = 
-          parameters(10)%upper_limit = 
-          parameters(10)%sigma = 
-          parameters(10)%scale = 
-          parameters(10)%latexname = 
+          parameters(10)%mean = 5.0d0
+          parameters(10)%lower_limit = -3.d3
+          parameters(10)%upper_limit = 1.d1
+          parameters(10)%sigma = 1.0d-1
+          parameters(10)%scale = 1.d0
+          parameters(10)%latexname = 'f_{\pi}'
+
+          write(UNIT_FILE1,*) 'IMPLEMENT log10g_pi!'
+
+          stop
 
           parameters(11)%name = 'g_pi'
-          parameters(11)%mean = 
-          parameters(11)%lower_limit = 
-          parameters(11)%upper_limit = 
-          parameters(11)%sigma = 
-          parameters(11)%scale = 
-          parameters(11)%latexname = 
+          parameters(11)%mean = 0.0d0 ! THIS IS ACTUALLY log10 g_pi
+          parameters(11)%lower_limit = -3.d1
+          parameters(11)%upper_limit = 3.d1
+          parameters(11)%sigma = 1.0d0 ! THIS IS THE ERROR ON log10 g_pi
+          parameters(11)%scale = 1.d0
+          parameters(11)%latexname = '\log g_{\pi}'
 
        End if
-
-       parameters(index)%name = 'p'//trim(string)//''
-       parameters(index)%mean = 0.d0
-       parameters(index)%lower_limit = -1.d1
-       parameters(index)%upper_limit = 1.d1
-       parameters(index)%sigma = 5.d-1
-       parameters(index)%scale = 1.d0
-       parameters(index)%latexname = 'p_{'//trim(string)//'}'
-
-
-
-
-
-  !################################################
-  ! 1-SIGMA VALUES FOR PARAMETERS IN FIDUCIAL MODEL
-  !################################################
-
-  Real*8,parameter :: sigma_omega_b = 1.5d-4
-  Real*8,parameter :: sigma_omega_cdm = 1.4d-3
-  Real*8,parameter :: sigma_n_s = 4.5d-3
-  Real*8,parameter :: sigma_A_s = 3.82d-11
-  Real*8,parameter :: sigma_H0 = 0.62d0
-  Real*8,parameter :: sigma_m_ncdm = 5.d-3
-  Real*8,parameter :: sigma_tau = 8.9d-3
-  Real*8,parameter :: sigma_nc_bias_b0 = 1.0d-1
-  Real*8,parameter :: sigma_cs2_fld = 1.0d-1
-  Real*8,parameter :: sigma_w0_fld = 2.2d-1
-  !Real*8,parameter :: sigma_wa_fld = 2.2d-1
-  Real*8,parameter :: sigma_e_pi = 1.0d-1
-  Real*8,parameter :: sigma_f_pi = 1.0d-1
-  Real*8,parameter :: sigma_g_pi = 1.0d0 ! THIS IS THE ERROR ON log10 g_pi 
 
        stop
        
@@ -289,54 +272,38 @@ contains
     
     Integer*4 :: index1,index2
 
-    If (likelihood .eq. 'gaussian') then
+    If (starting_cov_mat .eq. 'diagonal') then
 
-       If (starting_cov_mat .eq. 'diagonal') then
+       Do index1=1,number_of_parameters  
 
-          Do index1=1,number_of_parameters  
+          Do index2=1,number_of_parameters 
 
-             Do index2=1,number_of_parameters 
+             If (index1 .eq. index2) then      
 
-                If (index1 .eq. index2) then      
+                Cov_mat(index1,index2) = parameters(index1)%sigma*parameters(index2)%sigma
 
-                   Cov_mat(index1,index2) = parameters(index1)%sigma*parameters(index2)%sigma
+             Else 
 
-                Else 
+                Cov_mat(index1,index2) = 0.d0
 
-                   Cov_mat(index1,index2) = 0.d0
-
-                End If
-
-             End Do
+             End If
 
           End Do
 
-       Else if (starting_cov_mat .eq. 'given') then
+       End Do
 
-          call read_cov_mat()
+    Else if (starting_cov_mat .eq. 'given') then
 
-       Else
+       call read_cov_mat()
 
-          write(UNIT_FILE1,*) 'UNRECOGNISED OPTION FOR starting_cov_mat PARAMETER'
-
-          stop
-
-       End If
-
-    Else if (likelihood .eq. 'euclid') then
-
-       write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
-
-       stop
-       
     Else
 
-       stop
-       
-    End if
+       write(UNIT_FILE1,*) 'UNRECOGNISED OPTION FOR starting_cov_mat PARAMETER'
 
-    Cov_mat = jumping_factor*Cov_mat
-    
+       stop
+
+    End If
+
   end subroutine set_covariance_matrix
 
   subroutine set_starting_point()
@@ -422,6 +389,26 @@ contains
 
   end subroutine create_getdist_files
 
+  subroutine load_data()
+
+    use input
+
+    Implicit none
+
+    If (likelihood .eq. 'gaussian') then
+
+       continue
+       
+    Else if (likelihood .eq. 'euclid') then
+
+    End If
+    
+    Real*8, allocatable, dimension(:,:,:) :: El, Cl_fid, Cl_obs
+    Real*8, allocatable, dimension(:,:,:) :: Cl_syst,Cl_current
+    Real*8, allocatable, dimension(:,:) :: Nl
+    
+  end subroutine load_data
+  
   subroutine compute_theoretical_model()
 
     use input

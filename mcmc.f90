@@ -38,6 +38,9 @@ Program mcmc
   call initialisation()
 
   call create_getdist_files()
+
+  ! LOAD DATA
+
   
   ! COMPUTE THEORETICAL MODEL
 
