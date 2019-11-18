@@ -23,7 +23,7 @@ Module input
   end type parameters_mcmc
 
   ! MCMC PARAMETERS 
-  Character(len=*),parameter :: likelihood = 'gaussian' ! OPTIONS: 'gaussian','euclid'
+  Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'bestfit' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
   
@@ -37,6 +37,7 @@ Module input
   Integer*4,parameter :: UNIT_FILE6 = 85  ! UNIT NUMBER COVMAT FILE
   Integer*4,parameter :: UNIT_FILE7 = 86  ! UNIT NUMBER COVMAT FILE
   Integer*4,parameter :: UNIT_FILE8 = 87  ! UNIT NUMBER BESTFIT FILE
+  Integer*4,parameter :: UNIT_FILE9 = 88  ! UNIT NUMBER INI FILE
   Integer*4 :: number_accepted_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: number_rejected_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: weight = 1 ! COUNTS NUMBER OF TAKEN STEPS BEFORE MOVING TO A NEW POINT
@@ -58,7 +59,7 @@ Module input
 !  Real*8 :: acceptance_ratio  ! IT STORES ACCEPTANCE RATIO FOR CURRENT CHAIN
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
-
+  Logical,parameter :: lensing = .true. 
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
 
@@ -68,7 +69,28 @@ Module input
   Real*8,parameter :: deg_ncdm = 1.d0
   Real*8,parameter :: tau = 5.96d-2
   !Real*8,parameter :: sigma_tau = 8.9d-3
+
+  Integer*4,parameter :: nbins = 10
+  Integer*4,parameter :: lmax_class = 2000
+  Integer*4,parameter :: lmin = 2
+
+  Real*8,parameter    :: Pi = 3.141592653589793d0
+  Real*8,parameter    :: zmin = 0.1d0
+  Real*8,parameter    :: zmax = 2.0d0
+  Real*8,parameter    :: dz = 1.0d-3
+  Real*8,parameter    :: gal_per_sqarcmn = 30.d0
+  Real*8,parameter    :: fsky = 1.5d4/4.1253d4
+  Real*8,parameter    :: theoreticalerror = 0.d0 !5.d-2
+  Real*8,dimension(int((zmax - zmin)/dz)) :: z_array
+  Real*8,dimension(int(nbins+1)) :: z_bin_edges
+  Real*8,dimension(nbins) :: z_bin_centers, z_bin_widths, z_bin_bias, s_z_mag_bias
+  Real*8,parameter :: s_0 = 0.1194d0
+  Real*8,parameter :: s_1 = 0.2122d0
+  Real*8,parameter :: s_2 = -0.0671d0
+  Real*8,parameter :: s_3 = 0.1031d0
   
+  Character(len=*),parameter :: selection = 'tophat' ! OPTIONS: 'tophat', 'gaussian'
+
   ! PATHS TO FILES:
   Character(len=*),parameter :: OUTPUT = './output'
   Character(len=*),parameter :: CHAINS = './chains'
@@ -85,12 +107,16 @@ Module input
   Character(len=*),parameter :: BESTFIT_FILE_AUX = './output/bestfit.txt'
   Character(len=*),parameter :: COVMAT_FILE = COVMAT//trim('/covmat')//'.txt'
   Character(len=*),parameter :: BESTFIT_FILE = BESTFIT//trim('/bestfit')//'.txt'
-  
+  Character(len=*),parameter :: INI_FILE = './output/file.ini'
+  Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
+  Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
+  Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
+
   !  Character(len=*),parameter :: PATH_TO_CHAINS_CHAIN = './output/chains/mcmc_final_output_'
 !  Character(len=*),parameter :: EXECUTION_INFORMATION_CHAIN = './output/chains/execution_information_chain_'
 
-!  Character(len=*),parameter :: PATH_TO_INI_FILES = './ini_files/current_euclid_galaxy_cl_lensing_'
-!  Character(len=*),parameter :: PATH_TO_CURRENT_CL = './output/current_euclid_galaxy_lensing_'
+
+
 !  Character(len=*),parameter :: PATH_TO_INI_FILES_CMB = './ini_files/current_fake_planck_cl_'
 !  Character(len=*),parameter :: PATH_TO_CURRENT_CL_CMB = './output/current_fake_planck_'
   

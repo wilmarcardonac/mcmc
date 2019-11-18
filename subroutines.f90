@@ -116,7 +116,21 @@ contains
     Else if (likelihood .eq. 'euclid') then
 
        write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD'
-       
+
+       call bin_centers_widths_bias()
+
+       print *, z_bin_centers
+
+       print *, z_bin_widths
+
+       print *, z_bin_bias
+
+       print *, s_z_mag_bias
+
+       print *, 'TEST GAUSSIAN SELECTION AND NUMBER OF BINS. CORRECT REF [46] and Table I IN THE DRAFT'
+
+       stop
+
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
        parameters(1)%lower_limit = 1.d-4
@@ -141,17 +155,13 @@ contains
        parameters(3)%scale = 1.d0
        parameters(3)%latexname = 'n_s'
 
-       write(UNIT_FILE1,*) 'IMPLEMENT ln 10^10 A_s!'
-
-       stop
-
-       parameters(4)%name = 'A_s'
-       parameters(4)%mean = 2.12424d-9
-       parameters(4)%lower_limit = 1.d-11
-       parameters(4)%upper_limit = 1.d-7
-       parameters(4)%sigma = 3.82d-11
+       parameters(4)%name = 'ln10^{10}A_s'
+       parameters(4)%mean = 3.056d0 !2.12424d-9
+       parameters(4)%lower_limit = 2.0d0 !1.d-11
+       parameters(4)%upper_limit = 4.0d0
+       parameters(4)%sigma = 0.018d0 !3.82d-11
        parameters(4)%scale = 1.d0
-       parameters(4)%latexname = 'A_s'
+       parameters(4)%latexname = '\ln 10^{10} A_s'
 
        parameters(5)%name = 'H0'
        parameters(5)%mean = 6.693d1
@@ -179,13 +189,9 @@ contains
 
        If (number_of_parameters .eq. 10) then
 
-          write(UNIT_FILE1,*) 'IMPLEMENT logcs2!'
-
-          stop
-
-          parameters(8)%name = 'cs2_fld'
-          parameters(8)%mean = 1.d0
-          parameters(8)%lower_limit = -1.d1
+          parameters(8)%name = 'log10ceff2'
+          parameters(8)%mean = 0.d0
+          parameters(8)%lower_limit = -3.d1
           parameters(8)%upper_limit = 0.d0
           parameters(8)%sigma = 1.0d-1
           parameters(8)%scale = 1.d0
@@ -193,12 +199,8 @@ contains
 
        Else if (number_of_parameters .eq. 11) then
 
-          write(UNIT_FILE1,*) 'IMPLEMENT logceff2!'
-
-          stop
-          
-          parameters(8)%name = 'cs2_fld' 
-          parameters(8)%mean = 4.3d0
+          parameters(8)%name = 'log10ceff2' 
+          parameters(8)%mean = -0.0132d0
           parameters(8)%lower_limit = -3.d3
           parameters(8)%upper_limit = 0.d0
           parameters(8)%sigma = 1.0d-1
@@ -219,8 +221,8 @@ contains
           
           parameters(10)%name = 'e_pi'
           parameters(10)%mean = 0.0d0
-          parameters(10)%lower_limit = -5.d-1
-          parameters(10)%upper_limit = 5.d-1
+          parameters(10)%lower_limit = -2.d0
+          parameters(10)%upper_limit = 2.d0
           parameters(10)%sigma = 1.0d-1
           parameters(10)%scale = 1.d0
           parameters(10)%latexname = 'e_{\pi}'
@@ -235,11 +237,7 @@ contains
           parameters(10)%scale = 1.d0
           parameters(10)%latexname = 'f_{\pi}'
 
-          write(UNIT_FILE1,*) 'IMPLEMENT log10g_pi!'
-
-          stop
-
-          parameters(11)%name = 'g_pi'
+          parameters(11)%name = 'log10g_pi'
           parameters(11)%mean = 0.0d0 ! THIS IS ACTUALLY log10 g_pi
           parameters(11)%lower_limit = -3.d1
           parameters(11)%upper_limit = 3.d1
@@ -409,6 +407,7 @@ contains
     
   end subroutine load_data
   
+
   subroutine compute_theoretical_model()
 
     use input
@@ -942,5 +941,297 @@ contains
     close(UNIT_FILE8)
     
   end subroutine write_bestfit
+
+  subroutine write_ini_file(point)
+
+    use input
+
+    Implicit none
+
+    Logical :: exist,data_file 
+
+    Integer*4 :: index
+
+    Real*8,dimension(number_of_parameters) :: point
+
+    open(UNIT_FILE9,file=INI_FILE)
+
+    inquire(file=EL_FILE,exist=exist)
+
+    If (exist) then 
+
+       inquire(file=CLFID_FILE,exist=exist)
+
+       If (exist) then
+
+          data_file = .false.
+
+          write(UNIT_FILE9,*) 'root = 'OUTPUT//trim('/Cl')//'_'
+
+       Else
+
+          data_file = .true.
+
+          write(UNIT_FILE9,*) 'root = 'DATA//trim('/Clfid')//'_'
+
+       End If
+
+    Else
+
+       data_file = .true.
+ 
+       write(UNIT_FILE9,*) 'root = 'DATA//trim('/El')//'_'
+
+       write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
+
+       write(UNIT_FILE1,*) 'number count error not implemented in class. Fix it'
+
+    End If
+
+    If (lensing) then
+
+       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+
+    Else
+
+       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+
+    End if
+
+    ! Background parameters and anisotropic stress
+
+    If (data_file) then
+
+       Do index=1,number_of_parameters
+
+          write(UNIT_FILE9,*) parameters(index)%name//trim(' =')//' ', parameters(index)%mean
+
+       End Do
+
+    Else
+
+       Do index=1,number_of_parameters
+
+          write(UNIT_FILE9,*) parameters(index)%name//trim(' =')//' ', point(index)
+
+       End Do
+
+    End If
+
+!    write(UNIT_FILE1,'(a6, es16.10)') 'A_s = ', parameter_value  
+
+!    write(UNIT_FILE1,'(a6, es16.10)') 'n_s = ', parameter_value
+
+!    write(UNIT_FILE1,'(a5, es16.10)') 'H0 = ', parameter_value
+
+!    write(UNIT_FILE1,'(a10, es16.10)') 'omega_b = ', parameter_value
+
+!    write(UNIT_FILE1,'(a12, es16.10)') 'omega_cdm = ', parameter_value
+
+!    write(UNIT_FILE1,'(a9, es16.10)') 'm_ncdm = ', parameter_value
+
+!    write(UNIT_FILE1,'(a13, es16.10)') 'nc_bias_b0 = ', parameter_value
+
+!    write(UNIT_FILE1,'(a13, es17.10)') 'log10ceff2 = ', log10(cs2_fld-2.d0*f_pi/3.d0)
+
+!    write(UNIT_FILE1,'(a13, es17.10)') 'log10ceff2 = ', parameter_value
+
+!    write(UNIT_FILE1,'(a9, es17.10)') 'w0_fld = ', parameter_value
+
+!    write(UNIT_FILE1,'(a7, es17.10)') 'e_pi = ', parameter_value
+
+!    write(UNIT_FILE1,'(a7, es17.10)') 'f_pi = ', parameter_value
+
+!    write(UNIT_FILE1,'(a12, es16.10)') 'log10g_pi = ', parameter_value
+
+    write(UNIT_FILE9,'(a11, es16.10)') 'tau_reio = ', tau
+
+    write(UNIT_FILE9,'(a7, f5.3)') 'N_ur = ', real(N_ur)
+
+    write(UNIT_FILE9,'(a9, f5.3)') 'N_ncdm = ', real(N_ncdm)
+
+    write(UNIT_FILE9,'(a11, f5.3)') 'deg_ncdm = ', real(deg_ncdm)
+
+    write(UNIT_FILE9,'(a10,f5.3)') 'Omega_k = ', real(0.)
+
+    write(UNIT_FILE9,'(a15,f5.3)') 'Omega_Lambda = ', real(0.)
+
+    ! Number counts in the output                                                                                            
+
+    write(UNIT_FILE9,'(a12)') 'output = nCl'
+
+    write(UNIT_FILE9,'(a32)') 'dNdz_selection = analytic_euclid'
+
+    write(UNIT_FILE9,'(a32)') 'dNdz_evolution = analytic_euclid'
+
+!    write(UNIT_FILE9,'(a20)') 'selection = gaussian'
+    write(UNIT_FILE9,*) 'selection = '//trim(selection)//' '
+
+    write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_mean = ', z_bin_centers(1),',', z_bin_centers(2),',',&
+         z_bin_centers(3),',',z_bin_centers(4),',',z_bin_centers(5),',',z_bin_centers(6),',',z_bin_centers(7),',',&
+         z_bin_centers(8),',',z_bin_centers(9),',',z_bin_centers(10)
+
+    write(UNIT_FILE9,'(a18, 9(f10.8, a1),f10.8)') 'selection_width = ', z_bin_widths(1),',',z_bin_widths(2),',',&
+         z_bin_widths(3),',',z_bin_widths(4),',',z_bin_widths(5),',',z_bin_widths(6),',',z_bin_widths(7),',',&
+         z_bin_widths(8),',',z_bin_widths(9),',',z_bin_widths(10)
+
+    write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_bias = ', z_bin_bias(1),',',z_bin_bias(2),',',&
+         z_bin_bias(3),',',z_bin_bias(4),',',z_bin_bias(5),',',z_bin_bias(6),',',z_bin_bias(7),',',z_bin_bias(8),',',&
+         z_bin_bias(9),',',z_bin_bias(10)
+
+    write(UNIT_FILE9,'(a31, 9(f10.8, a1),f10.8)') 'selection_magnification_bias = ', s_z_mag_bias(1),',',&
+         s_z_mag_bias(2),',',s_z_mag_bias(3),',',s_z_mag_bias(4),',',s_z_mag_bias(5),',',s_z_mag_bias(6),',',&
+         s_z_mag_bias(7),',',s_z_mag_bias(8),',',s_z_mag_bias(9),',',s_z_mag_bias(10)
+
+    write(UNIT_FILE9,'(a15,i2)') 'non_diagonal = ',nbins-1
+
+    write(UNIT_FILE9,'(a13)') 'headers = yes'
+
+    write(UNIT_FILE9,'(a17)') 'bessel file = yes'
+
+    write(UNIT_FILE9,'(a12,i4)') 'l_max_lss = ', lmax_class
+
+    write(UNIT_FILE9,'(a8,i1)') 'l_min = ', lmin
+
+    write(UNIT_FILE9,'(a14)') 'format = class'
+
+    write(UNIT_FILE9,'(a17)') 'gauge = newtonian'
+
+    close(UNIT_FILE9)
+
+  end subroutine write_ini_file
   
+  subroutine bin_centers_widths_bias()
+
+    use input
+
+    Implicit none
+
+    Real*8 :: n_tot, gd_1, gd_2, gal_count, z, delta_z
+    Integer*4 :: m,n,i
+    Integer*4 :: p,nb
+
+    nb = nbins + 1
+
+    delta_z = (zmax - zmin)/real(nbins)
+
+    If (selection .eq. 'gaussian') then
+       
+       p = int((zmax - zmin)/dz)
+
+
+       z_array(1) = zmin
+
+       Do m=2,p
+
+          z_array(m) = z_array(m-1) + dz
+
+       End do
+
+       z_array(p) = zmax
+
+       n_tot = 0.d0
+
+       Do m=1,p-1
+
+          gd_1 = galaxy_distribution(z_array(m))
+
+          gd_2 = galaxy_distribution(z_array(m+1))
+
+          n_tot = (gd_1 + gd_2)/2.*dz + n_tot 
+
+       End Do
+
+       z_bin_edges(1) = zmin
+
+       Do n=1,nbins
+
+          gal_count = 0.d0
+
+          z = z_bin_edges(n)
+
+          Do i=1,10000
+
+             If (gal_count .gt. n_tot/nbins) exit
+
+             gd_1 = galaxy_distribution(z)
+
+             gd_2 = galaxy_distribution(z+dz)
+
+             gal_count = (gd_1 + gd_2)/2.*dz + gal_count
+
+             z = z + dz 
+
+          End Do
+
+          z_bin_edges(n+1) = z
+
+       End Do
+
+       z_bin_edges(nbins+1) = zmax
+
+       Do n=2,nbins+1
+
+          z_bin_centers(n-1) = (z_bin_edges(n) + z_bin_edges(n-1))/2.
+
+          z_bin_widths(n-1) = (z_bin_edges(n) - z_bin_edges(n-1))/2.
+
+          z_bin_bias(n-1) = sqrt(1.d0 + z_bin_centers(n-1))
+
+          s_z_mag_bias(n-1) = s_0 + s_1*z_bin_centers(n-1) + s_2*z_bin_centers(n-1)**2 + s_3*z_bin_centers(n-1)**3
+
+       End Do
+
+    Else if (selection .eq. 'tophat') then
+
+       z_bin_edges(1) = zmin
+
+       Do n=2,nbins
+
+          z_bin_edges(n) = z_bin_edges(n-1) + delta_z
+
+       End Do
+
+       z_bin_edges(nb) = zmax
+
+       Do n=1,nbins 
+
+          z_bin_centers(n) = (z_bin_edges(n+1) + z_bin_edges(n))/2.d0
+          
+          z_bin_widths(n) = (z_bin_edges(n+1) - z_bin_edges(n))/2.d0
+
+       End Do
+
+       Do n=2,nb
+
+          z_bin_bias(n-1) = sqrt(1.d0 + z_bin_centers(n-1))
+
+          s_z_mag_bias(n-1) = s_0 + s_1*z_bin_centers(n-1) + s_2*z_bin_centers(n-1)**2 + s_3*z_bin_centers(n-1)**3
+
+       End Do
+
+    Else
+
+       write(UNIT_FILE1,*) 'UNRECOGNISED OPTION FOR selection'
+
+       stop
+
+    End If
+
+  end subroutine bin_centers_widths_bias
+
+  function galaxy_distribution(z)
+
+    Implicit none
+
+    Real*8 :: zmean,z0,z,galaxy_distribution
+
+    zmean = 0.9d0
+
+    z0 = zmean/1.412d0
+
+    galaxy_distribution = z**2*exp(-(z/z0)**(1.5))
+
+  end function galaxy_distribution
+
 End Module subroutines
