@@ -5,7 +5,6 @@ Program mcmc
   !####################
 
   use input
-  use likelihoods
   use subroutines
   use fgsl
 
@@ -27,30 +26,27 @@ Program mcmc
 
   call create_directories_if_needed()
 
+  call system('rm output/*.ini output/*.dat')
+
   open(UNIT_FILE1,file=EXECUTION_INFORMATION)
 
   open(UNIT_FILE4,file=CHAIN_FILE)
 
   open(UNIT_FILE5,file=CHAIN_FILE_AUX)
 
-  ! DEFINE STARTING POINT, COVARIANCE MATRIX, CREATE GETDIST FILES
-
-  call initialisation()
+  call initialisation() ! DEFINE STARTING POINT, COVARIANCE MATRIX, CREATE GETDIST FILES
 
   call create_getdist_files()
 
-  ! LOAD DATA
-
+  allocate (El(lmin:lmax,0:nbins,0:nbins),Cl_fid(lmin:lmax,0:nbins,0:nbins),&
+       Cl_obs(lmin:lmax,0:nbins,0:nbins), Cl_current(lmin:lmax,0:nbins,0:nbins),&
+       Nl(1:nbins,1:nbins))
   
-  ! COMPUTE THEORETICAL MODEL
+  call load_data()   ! LOAD DATA
 
-  call compute_theoretical_model()
+  call compute_theoretical_model()   ! COMPUTE THEORETICAL MODEL
 
-  ! READ THEORETICAL MODEL AND COMPUTE LIKELIHOOD
-
-  call compute_ln_likelihood(old_point,old_loglikelihood)
-
-  ! GENERATE NEW POINT IN PARAMETER SPACE AND DECIDE ABOUT PLAUSIBILITY
+  call compute_ln_likelihood(current_point,old_loglikelihood)   ! READ THEORETICAL MODEL AND COMPUTE LIKELIHOOD
 
   write(UNIT_FILE1,*) 'HEADER FOR CHAIN FILE IS: '
   
@@ -58,25 +54,23 @@ Program mcmc
   
   Do index=1,number_iterations
      
-     call generate_new_point_in_parameter_space()
+     call generate_new_point_in_parameter_space()   ! GENERATE NEW POINT IN PARAMETER SPACE AND DECIDE ABOUT PLAUSIBILITY
 
-     ! COMPUTE LIKELIHOOD FOR NEW POINT
-
+     call compute_theoretical_model() ! COMPUTE LIKELIHOOD FOR NEW POINT
+     
      call compute_ln_likelihood(current_point,current_loglikelihood)
 
-     ! DECIDE ABOUT NEW POINT: KEEP IT, REJECT IT
+     call take_decision_about_current_point(index) ! DECIDE ABOUT NEW POINT: KEEP IT, REJECT IT
 
-     call take_decision_about_current_point(index)
-
-     ! COMPUTE ACCEPTANCE PROBABILITY AND DECIDE WHETHER OR NOT UPDATE COVARIANCE MATRIX 
-
-     call update_covariance_matrix(index)
+     call update_covariance_matrix(index) ! COMPUTE ACCEPTANCE PROBABILITY AND DECIDE WHETHER OR NOT UPDATE COVARIANCE MATRIX 
      
   End Do
 
   write(UNIT_FILE1,*) 'CODE SUCCESSFULLY ENDS EXECUTION'
   
   call fgsl_rng_free(r)
+
+  deallocate(Nl,El,Cl_fid,Cl_obs,Cl_current) 
   
   close(UNIT_FILE1)
 

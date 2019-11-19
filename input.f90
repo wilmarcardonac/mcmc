@@ -24,11 +24,11 @@ Module input
 
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
-  Character(len=*),parameter :: starting_point = 'bestfit' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
+  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
-  Integer*4,parameter :: number_of_parameters = 2 ! 11   ! TOTAL NUMBER VARYING PARAMETERS     
+  Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
   Integer*4,parameter :: UNIT_FILE2 = 81  ! UNIT NUMBER GETDIST FILES
   Integer*4,parameter :: UNIT_FILE3 = 82  ! UNIT NUMBER GETDIST FILES
@@ -38,6 +38,7 @@ Module input
   Integer*4,parameter :: UNIT_FILE7 = 86  ! UNIT NUMBER COVMAT FILE
   Integer*4,parameter :: UNIT_FILE8 = 87  ! UNIT NUMBER BESTFIT FILE
   Integer*4,parameter :: UNIT_FILE9 = 88  ! UNIT NUMBER INI FILE
+  Integer*4,parameter :: UNIT_FILE10 = 89  ! UNIT NUMBER SPECTRA
   Integer*4 :: number_accepted_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: number_rejected_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: weight = 1 ! COUNTS NUMBER OF TAKEN STEPS BEFORE MOVING TO A NEW POINT
@@ -50,6 +51,8 @@ Module input
   Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
+  Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
+  Real*8, allocatable, dimension(:,:,:) :: El, Cl_fid, Cl_obs, Cl_current
   Real*8 :: jumping_factor = 2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
   Real*8 :: old_loglikelihood,current_loglikelihood      ! STORE LIKELIHOOD VALUES
   Real*4,dimension(number_iterations) :: acceptance_probability
@@ -59,7 +62,8 @@ Module input
 !  Real*8 :: acceptance_ratio  ! IT STORES ACCEPTANCE RATIO FOR CURRENT CHAIN
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
-  Logical,parameter :: lensing = .true. 
+  Logical,parameter :: lensing = .true.
+  Logical :: cl_current_found
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
 
@@ -70,9 +74,10 @@ Module input
   Real*8,parameter :: tau = 5.96d-2
   !Real*8,parameter :: sigma_tau = 8.9d-3
 
-  Integer*4,parameter :: nbins = 10
+  Integer*4,parameter :: nbins = 5
   Integer*4,parameter :: lmax_class = 2000
   Integer*4,parameter :: lmin = 2
+  Integer*4,parameter :: lmax = 400
 
   Real*8,parameter    :: Pi = 3.141592653589793d0
   Real*8,parameter    :: zmin = 0.1d0
@@ -89,7 +94,7 @@ Module input
   Real*8,parameter :: s_2 = -0.0671d0
   Real*8,parameter :: s_3 = 0.1031d0
   
-  Character(len=*),parameter :: selection = 'tophat' ! OPTIONS: 'tophat', 'gaussian'
+  Character(len=*),parameter :: selection = 'gaussian' ! OPTIONS: 'tophat', 'gaussian'
 
   ! PATHS TO FILES:
   Character(len=*),parameter :: OUTPUT = './output'
@@ -111,13 +116,8 @@ Module input
   Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
   Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
   Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
-
-  !  Character(len=*),parameter :: PATH_TO_CHAINS_CHAIN = './output/chains/mcmc_final_output_'
-!  Character(len=*),parameter :: EXECUTION_INFORMATION_CHAIN = './output/chains/execution_information_chain_'
-
-
-
-!  Character(len=*),parameter :: PATH_TO_INI_FILES_CMB = './ini_files/current_fake_planck_cl_'
-!  Character(len=*),parameter :: PATH_TO_CURRENT_CL_CMB = './output/current_fake_planck_'
+  Character(len=*),parameter :: CLASS_EXECUTABLE = './class_EFCLASS'
+  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss.pre'
+  Character(len=*),parameter :: LOW_PRE = './class_EFCLASS/cl_lss_low.pre'
   
 End Module input

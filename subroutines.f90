@@ -119,18 +119,6 @@ contains
 
        call bin_centers_widths_bias()
 
-       print *, z_bin_centers
-
-       print *, z_bin_widths
-
-       print *, z_bin_bias
-
-       print *, s_z_mag_bias
-
-       print *, 'TEST GAUSSIAN SELECTION AND NUMBER OF BINS. CORRECT REF [46] and Table I IN THE DRAFT'
-
-       stop
-
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
        parameters(1)%lower_limit = 1.d-4
@@ -191,11 +179,11 @@ contains
 
           parameters(8)%name = 'log10ceff2'
           parameters(8)%mean = 0.d0
-          parameters(8)%lower_limit = -3.d1
+          parameters(8)%lower_limit = -3.d3
           parameters(8)%upper_limit = 0.d0
           parameters(8)%sigma = 1.0d-1
           parameters(8)%scale = 1.d0
-          parameters(8)%latexname = 
+          parameters(8)%latexname = '\log c_{eff}^2'
 
        Else if (number_of_parameters .eq. 11) then
 
@@ -246,8 +234,6 @@ contains
           parameters(11)%latexname = '\log g_{\pi}'
 
        End if
-
-       stop
        
     Else
 
@@ -356,7 +342,9 @@ contains
 
     Do index=1,number_of_parameters
           
-       write(UNIT_FILE1,*) parameters(index)%name, ' =', old_point(index) 
+       write(UNIT_FILE1,*) parameters(index)%name, ' =', old_point(index)
+
+       current_point(index) = old_point(index)
           
     End Do
 
@@ -393,20 +381,252 @@ contains
 
     Implicit none
 
+    Logical :: exist 
+
     If (likelihood .eq. 'gaussian') then
 
        continue
-       
+
     Else if (likelihood .eq. 'euclid') then
+
+       write(UNIT_FILE1,*) 'COMPUTING SHOT NOISE'
+       
+       call compute_shot_noise()
+
+       inquire(file=EL_FILE,exist=exist)
+
+       If (exist) then 
+
+          write(UNIT_FILE1,*) 'READING ERROR FILE'
+          
+          call read_spectra('El',El)
+
+       Else
+
+          write(UNIT_FILE1,*) 'COMPUTING ERROR FILE'
+          
+          call write_ini_file(parameters(:)%mean,'El')
+
+          call compute_spectra('El')
+
+          call read_spectra('El',El)
+
+       End If
+
+       inquire(file=CLFID_FILE,exist=exist)
+
+       If (exist) then 
+
+          write(UNIT_FILE1,*) 'READING FIDUCIAL CL'
+          
+          call read_spectra('Clfid',Cl_fid)
+
+       Else
+
+          write(UNIT_FILE1,*) 'COMPUTING FIDUCIAL CL'
+          
+          call write_ini_file(parameters(:)%mean,'Clfid')
+
+          call compute_spectra('Clfid')
+
+          call read_spectra('Clfid',Cl_fid)
+
+       End If
+
+       write(UNIT_FILE1,*) 'COMPUTING OBSERVED CL'
+       
+       call compute_observed_Cl()
+       
+    End If
+
+  end subroutine load_data
+
+  subroutine compute_spectra(spectra)
+    
+    use input
+    
+    Implicit none
+
+    Character(len=*) :: spectra
+
+    If ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) then
+       
+       call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(HIGH_PRE)//'')
+
+    Else if (spectra .eq. 'Cl') then
+
+       call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE)//'')       
+       
+    Else
+
+       write(UNIT_FILE1,*) 'UNRECOGNISED OPTION IN subroutine compute_spectra'
+       
+    End if
+       
+  end subroutine compute_spectra
+
+  subroutine read_spectra(spectra,Cl)
+    
+    use input
+    
+    Implicit none
+
+    Character(len=*) :: spectra
+    
+    Real*8,dimension(lmin:lmax,0:nbins,0:nbins) :: Cl
+    Integer*4 m,p,i
+
+    Logical :: exist
+
+    If (spectra .eq. 'El') then
+
+       inquire(file=EL_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=EL_FILE)
+
+       End If
+       
+    Else if (spectra .eq. 'Clfid') then
+
+       inquire(file=CLFID_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=CLFID_FILE)
+
+       End If
+       
+    Else if (spectra .eq. 'Cl') then
+
+       inquire(file=CL_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=CL_FILE)
+
+       End If
+       
+    Else
+
+       write(UNIT_FILE1,*) 'UNRECOGNISED OPTION IN subroutine read_spectra'
+
+       stop
+       
+    End If
+
+    If (exist) then
+
+       cl_current_found = .true. 
+
+       Do m=-5,lmax
+
+          If (m .le. 1) then
+
+             read(UNIT_FILE10,*)
+
+          else
+
+             If (nbins .eq. 5) then
+
+                read(UNIT_FILE10,*) Cl(m,0,0),Cl(m,1,1),Cl(m,1,2),Cl(m,1,3),Cl(m,1,4),Cl(m,1,5),&
+                     Cl(m,2,2),Cl(m,2,3),Cl(m,2,4),Cl(m,2,5),Cl(m,3,3),Cl(m,3,4),Cl(m,3,5),&
+                     Cl(m,4,4),Cl(m,4,5),Cl(m,5,5)
+
+             Else if (nbins .eq. 10) then
+
+                read(UNIT_FILE10,*) Cl(m,0,0),Cl(m,1,1),Cl(m,1,2),Cl(m,1,3),Cl(m,1,4),Cl(m,1,5),&
+                     Cl(m,1,6),Cl(m,1,7),Cl(m,1,8),Cl(m,1,9),Cl(m,1,10),Cl(m,2,2),Cl(m,2,3),&
+                     Cl(m,2,4),Cl(m,2,5),Cl(m,2,6),Cl(m,2,7),Cl(m,2,8),Cl(m,2,9),Cl(m,2,10),&
+                     Cl(m,3,3),Cl(m,3,4),Cl(m,3,5),Cl(m,3,6),Cl(m,3,7),Cl(m,3,8),Cl(m,3,9),&
+                     Cl(m,3,10),Cl(m,4,4),Cl(m,4,5),Cl(m,4,6),Cl(m,4,7),Cl(m,4,8),Cl(m,4,9),&
+                     Cl(m,4,10),Cl(m,5,5),Cl(m,5,6),Cl(m,5,7),Cl(m,5,8),Cl(m,5,9),Cl(m,5,10),&
+                     Cl(m,6,6),Cl(m,6,7),Cl(m,6,8),Cl(m,6,9),Cl(m,6,10),Cl(m,7,7),Cl(m,7,8),&
+                     Cl(m,7,9),Cl(m,7,10),Cl(m,8,8),Cl(m,8,9),Cl(m,8,10),Cl(m,9,9),Cl(m,9,10),&
+                     Cl(m,10,10)
+
+             End if
+
+             Do p=1,nbins
+
+                Do i=1,nbins
+
+                   If (p .gt. i) then
+
+                      Cl(m,p,i) = Cl(m,i,p)
+
+                   End If
+
+                End Do
+
+             End Do
+
+          End If
+
+       End Do
+
+       close(UNIT_FILE10)
+       
+    Else
+
+       cl_current_found = .false.
 
     End If
     
-    Real*8, allocatable, dimension(:,:,:) :: El, Cl_fid, Cl_obs
-    Real*8, allocatable, dimension(:,:,:) :: Cl_syst,Cl_current
-    Real*8, allocatable, dimension(:,:) :: Nl
-    
-  end subroutine load_data
+  end subroutine read_spectra
   
+  subroutine compute_shot_noise()
+
+    use input
+
+    Implicit none
+
+    Integer*4 :: m,n
+
+    Do m = 1,nbins
+
+       Do n = 1,nbins
+
+          If (m .ne. n) then
+
+             Nl(m,n) = 0.d0
+
+          else
+
+             Nl(m,n) = real(nbins)*(1.d0/(3600.d0*gal_per_sqarcmn*(180.d0/Pi)**2))
+
+          End If
+
+       End Do
+
+    End Do
+
+  end subroutine compute_shot_noise
+
+  subroutine compute_observed_Cl()
+
+    use input
+    
+    Implicit none
+
+    Integer*4 :: m,p,i
+
+    Do m=lmin,lmax
+
+       Do p=1,nbins
+
+          Do i=1,nbins
+
+             Cl_obs(m,p,i) = 2.d0*Pi*(Cl_fid(m,p,i) + El(m,p,i))/real(m)/(real(m)+1.d0) + Nl(p,i) 
+
+          End Do
+
+       End Do
+
+    End Do
+
+  end subroutine compute_observed_Cl
 
   subroutine compute_theoretical_model()
 
@@ -420,10 +640,12 @@ contains
        
     Else if (likelihood .eq. 'euclid') then
 
-       write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+       call write_ini_file(current_point,'Cl')
 
-       stop    
-       
+       call compute_spectra('Cl')
+
+       call read_spectra('Cl',Cl_current)
+
     End if
     
   end subroutine compute_theoretical_model
@@ -431,7 +653,6 @@ contains
   subroutine compute_ln_likelihood(point,lnlikelihood)
 
     use input
-    use likelihoods
     
     Implicit none
 
@@ -468,10 +689,16 @@ contains
 
        Else if (likelihood .eq. 'euclid') then
 
-          write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD. NOT YET IMPLEMENTED'
+          If (cl_current_found) then
 
-          stop    
+             lnlikelihood = euclid_galaxy_cl_likelihood(Cl_current)
 
+          Else
+             
+             lnlikelihood = -1.d10 
+
+          End if
+          
        End If
 
     Else
@@ -830,6 +1057,33 @@ contains
 
   end subroutine compute_cov_mat
 
+  function compute_determinant(matrix)
+
+    use input
+    use fgsl
+    
+    Implicit none
+    
+    real(fgsl_double),dimension(nbins,nbins) :: matrix
+    integer(fgsl_size_t), parameter :: n = nbins
+    integer(fgsl_int) :: status,signum
+    type(fgsl_matrix) :: a
+    real(fgsl_double), target :: af(n, n)
+    type(fgsl_permutation) :: q
+    real(fgsl_double) :: compute_determinant
+    
+    a = fgsl_matrix_init(type=1.0_fgsl_double)
+    q = fgsl_permutation_alloc(n)
+
+    af = matrix
+
+    status = fgsl_matrix_align(af, n, n, n, a)
+    status = fgsl_linalg_LU_decomp (a, q, signum)
+
+    compute_determinant = fgsl_linalg_LU_det(a,signum)
+
+  end function compute_determinant
+
   subroutine write_cov_mat()
 
     use input
@@ -942,13 +1196,13 @@ contains
     
   end subroutine write_bestfit
 
-  subroutine write_ini_file(point)
+  subroutine write_ini_file(point,spectra)
 
     use input
 
     Implicit none
 
-    Logical :: exist,data_file 
+    Character(len=*) :: spectra 
 
     Integer*4 :: index
 
@@ -956,36 +1210,24 @@ contains
 
     open(UNIT_FILE9,file=INI_FILE)
 
-    inquire(file=EL_FILE,exist=exist)
+    If (spectra .eq. 'El') then 
 
-    If (exist) then 
-
-       inquire(file=CLFID_FILE,exist=exist)
-
-       If (exist) then
-
-          data_file = .false.
-
-          write(UNIT_FILE9,*) 'root = 'OUTPUT//trim('/Cl')//'_'
-
-       Else
-
-          data_file = .true.
-
-          write(UNIT_FILE9,*) 'root = 'DATA//trim('/Clfid')//'_'
-
-       End If
-
-    Else
-
-       data_file = .true.
- 
-       write(UNIT_FILE9,*) 'root = 'DATA//trim('/El')//'_'
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/El_'
 
        write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
 
-       write(UNIT_FILE1,*) 'number count error not implemented in class. Fix it'
+    Else if (spectra .eq. 'Clfid') then
 
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfid_'
+       
+    Else if (spectra .eq. 'Cl') then
+
+       write(UNIT_FILE9,*) 'root = '//trim(OUTPUT)//'/Cl_'
+
+    Else
+
+       write(UNIT_FILE1,*) 'UNRECOGNISED OPTION IN subroutine write_ini_file'
+       
     End If
 
     If (lensing) then
@@ -1000,7 +1242,7 @@ contains
 
     ! Background parameters and anisotropic stress
 
-    If (data_file) then
+    If ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid')) then
 
        Do index=1,number_of_parameters
 
@@ -1067,22 +1309,46 @@ contains
 !    write(UNIT_FILE9,'(a20)') 'selection = gaussian'
     write(UNIT_FILE9,*) 'selection = '//trim(selection)//' '
 
-    write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_mean = ', z_bin_centers(1),',', z_bin_centers(2),',',&
-         z_bin_centers(3),',',z_bin_centers(4),',',z_bin_centers(5),',',z_bin_centers(6),',',z_bin_centers(7),',',&
-         z_bin_centers(8),',',z_bin_centers(9),',',z_bin_centers(10)
+    If (nbins .eq. 5) then
 
-    write(UNIT_FILE9,'(a18, 9(f10.8, a1),f10.8)') 'selection_width = ', z_bin_widths(1),',',z_bin_widths(2),',',&
-         z_bin_widths(3),',',z_bin_widths(4),',',z_bin_widths(5),',',z_bin_widths(6),',',z_bin_widths(7),',',&
-         z_bin_widths(8),',',z_bin_widths(9),',',z_bin_widths(10)
+       write(UNIT_FILE9,'(a17, 4(f10.8, a1),f10.8)') 'selection_mean = ', z_bin_centers(1),',', z_bin_centers(2),',',&
+            z_bin_centers(3),',',z_bin_centers(4),',',z_bin_centers(5)
+       
+       write(UNIT_FILE9,'(a18, 4(f10.8, a1),f10.8)') 'selection_width = ', z_bin_widths(1),',',z_bin_widths(2),',',&
+            z_bin_widths(3),',',z_bin_widths(4),',',z_bin_widths(5)
 
-    write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_bias = ', z_bin_bias(1),',',z_bin_bias(2),',',&
-         z_bin_bias(3),',',z_bin_bias(4),',',z_bin_bias(5),',',z_bin_bias(6),',',z_bin_bias(7),',',z_bin_bias(8),',',&
-         z_bin_bias(9),',',z_bin_bias(10)
+       write(UNIT_FILE9,'(a17, 4(f10.8, a1),f10.8)') 'selection_bias = ', z_bin_bias(1),',',z_bin_bias(2),',',&
+            z_bin_bias(3),',',z_bin_bias(4),',',z_bin_bias(5)
 
-    write(UNIT_FILE9,'(a31, 9(f10.8, a1),f10.8)') 'selection_magnification_bias = ', s_z_mag_bias(1),',',&
-         s_z_mag_bias(2),',',s_z_mag_bias(3),',',s_z_mag_bias(4),',',s_z_mag_bias(5),',',s_z_mag_bias(6),',',&
-         s_z_mag_bias(7),',',s_z_mag_bias(8),',',s_z_mag_bias(9),',',s_z_mag_bias(10)
+       write(UNIT_FILE9,'(a31, 4(f10.8, a1),f10.8)') 'selection_magnification_bias = ', s_z_mag_bias(1),',',&
+            s_z_mag_bias(2),',',s_z_mag_bias(3),',',s_z_mag_bias(4),',',s_z_mag_bias(5)
 
+    Else if (nbins .eq. 10) then
+       
+       write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_mean = ', z_bin_centers(1),',', z_bin_centers(2),',',&
+            z_bin_centers(3),',',z_bin_centers(4),',',z_bin_centers(5),',',z_bin_centers(6),',',z_bin_centers(7),',',&
+            z_bin_centers(8),',',z_bin_centers(9),',',z_bin_centers(10)
+
+       write(UNIT_FILE9,'(a18, 9(f10.8, a1),f10.8)') 'selection_width = ', z_bin_widths(1),',',z_bin_widths(2),',',&
+            z_bin_widths(3),',',z_bin_widths(4),',',z_bin_widths(5),',',z_bin_widths(6),',',z_bin_widths(7),',',&
+            z_bin_widths(8),',',z_bin_widths(9),',',z_bin_widths(10)
+
+       write(UNIT_FILE9,'(a17, 9(f10.8, a1),f10.8)') 'selection_bias = ', z_bin_bias(1),',',z_bin_bias(2),',',&
+            z_bin_bias(3),',',z_bin_bias(4),',',z_bin_bias(5),',',z_bin_bias(6),',',z_bin_bias(7),',',z_bin_bias(8),',',&
+            z_bin_bias(9),',',z_bin_bias(10)
+
+       write(UNIT_FILE9,'(a31, 9(f10.8, a1),f10.8)') 'selection_magnification_bias = ', s_z_mag_bias(1),',',&
+            s_z_mag_bias(2),',',s_z_mag_bias(3),',',s_z_mag_bias(4),',',s_z_mag_bias(5),',',s_z_mag_bias(6),',',&
+            s_z_mag_bias(7),',',s_z_mag_bias(8),',',s_z_mag_bias(9),',',s_z_mag_bias(10)
+
+    Else
+
+       write(UNIT_FILE1,*) 'nbins MUST BE EITHER 5 OR 10'
+
+       stop
+       
+    End if
+    
     write(UNIT_FILE9,'(a15,i2)') 'non_diagonal = ',nbins-1
 
     write(UNIT_FILE9,'(a13)') 'headers = yes'
@@ -1233,5 +1499,224 @@ contains
     galaxy_distribution = z**2*exp(-(z/z0)**(1.5))
 
   end function galaxy_distribution
+
+  function log_Gaussian_likelihood(array)
+
+    use input
+
+    Implicit none
+
+    Integer*4 :: index
+    Real*8 :: log_Gaussian_likelihood
+    Real*8,dimension(number_of_parameters) :: array
+
+    log_Gaussian_likelihood = 0.d0
+
+    Do index=1,number_of_parameters
+
+       log_Gaussian_likelihood = array(index)**2 + log_Gaussian_likelihood
+
+    End Do
+
+    log_Gaussian_likelihood = -log_Gaussian_likelihood/2.d0
+
+  end function log_Gaussian_likelihood
+
+  function euclid_galaxy_cl_likelihood(Cl)
+
+    use input
+
+    Implicit none
+
+    Integer*4,parameter :: L = lmax - lmin + 1
+    Integer*4 :: indexl,indexbin_i,indexbin_j,indexbin_k,indexbin_p
+    Real*8,parameter :: epsilon_min = 0.d0
+    Real*8,parameter :: epsilon_max = 1.d2
+    Real*8,dimension(lmin:lmax,0:nbins,0:nbins) :: Clth,Cl,Elth
+    Real*8,dimension(1:nbins,1:nbins) :: Cov_mix,Cov_obs,Cov_the,Cov_the_El,Cov_mix_new
+    Real*8 :: euclid_galaxy_cl_likelihood,chi2,det_obs,det_the,det_mix,det_the_El,det_the_El_mix,epsilon_l
+    !    Real*8 :: nss,ass,h00,ob,ocdm
+    !    Real*8,dimension(5) :: param_vector
+    !    Real*8,parameter,dimension(5) :: fiducial_vector = [omega_b,omega_cdm,n_s,dlog(1.d10*A_s),H0]
+
+    !    param_vector(1) = ob
+    !    param_vector(2) = ocdm
+    !    param_vector(3) = nss
+    !    param_vector(4) = dlog(1.d10*ass)
+    !    param_vector(5) = h00
+
+    Do indexl=lmin,lmax
+
+       Do indexbin_i=1,nbins
+
+          Do indexbin_j=1,nbins
+
+             Clth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*(Cl(indexl,indexbin_i,indexbin_j) + &
+                  El(indexl,indexbin_i,indexbin_j) )/dble(indexl)/(dble(indexl) + 1.d0) + Nl(indexbin_i,indexbin_j)
+
+             Elth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*El(indexl,indexbin_i,indexbin_j)/&
+                  dble(indexl)/(dble(indexl) + 1.d0)*sqrt(dble(L))
+
+          End Do
+
+       End Do
+
+    End Do
+
+    chi2 = 0.d0
+
+    Do indexl=lmin,lmax
+
+       Do indexbin_i=1,nbins
+
+          Do indexbin_j=1,nbins
+
+             Cov_obs(indexbin_i,indexbin_j) = Cl_obs(indexl,indexbin_i,indexbin_j)
+
+             Cov_the(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
+
+          End Do
+
+       End Do
+
+       det_obs = compute_determinant(Cov_obs)
+
+       det_the = compute_determinant(Cov_the)
+
+       det_mix = 0.d0
+
+       If (theoreticalerror .gt. 0.d0) then 
+
+          Do  indexbin_k=1,nbins
+
+             Do indexbin_i=1,nbins
+
+                Do indexbin_j=1,nbins
+
+                   Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
+
+                End Do
+
+             End Do
+
+             Do indexbin_p=1,nbins
+
+                Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
+
+             End Do
+
+             det_mix = compute_determinant(Cov_mix) + det_mix
+
+          End Do
+
+          ! Here function to minimize chi2 w.r.t must be called  
+
+          epsilon_l = 0.d0 ! In the meantime we disregard epsilon_l (output of function above)
+
+          !If ( (epsilon_l-epsilon_min < 1.d-5/dble(L)) .or. (epsilon_max-epsilon_l<1.d-5/dble(L)) ) then 
+          !    print *,'Minimization did not converge for ', indexl, 'having epsilon_l equal to ',epsilon_l
+          !End If
+
+          Do indexbin_i=1,nbins
+
+             Do indexbin_j=1,nbins
+
+                Cov_the_El(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
+                     + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
+
+             End Do
+
+          End Do
+
+          det_the_El = compute_determinant(Cov_the_El)
+
+          det_the_El_mix = 0.d0
+
+          Do  indexbin_k=1,nbins
+
+             Do indexbin_i=1,nbins
+
+                Do indexbin_j=1,nbins
+
+                   Cov_mix_new(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
+                        + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
+
+                End Do
+
+             End Do
+
+             Do indexbin_p=1,nbins
+
+                Cov_mix_new(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
+
+             End Do
+
+             det_the_El_mix = compute_determinant(Cov_mix_new) + det_the_El_mix
+
+          End Do
+
+          chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the_El/det_obs) + det_the_El_mix/det_the_El &
+               - dble(nbins)) + chi2 + epsilon_l**2
+
+       Else
+
+          Do  indexbin_k=1,nbins
+
+             Do indexbin_i=1,nbins
+
+                Do indexbin_j=1,nbins
+
+                   Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
+
+                End Do
+
+             End Do
+
+             Do indexbin_p=1,nbins
+
+                Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
+
+             End Do
+
+             det_mix = compute_determinant(Cov_mix) + det_mix
+
+          End Do
+
+          chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the/det_obs) + det_mix/det_the - dble(nbins)) + chi2
+
+       End if
+
+    End Do
+
+    !    If (use_gaussian_planck_prior) then 
+
+    !       Do indexbin_i=1,5
+
+    !          Do indexbin_j=1,5
+
+    !             chi2 = (fiducial_vector(indexbin_i)-param_vector(indexbin_i))*inv_prior_cov(indexbin_i,&
+    !                  indexbin_j)*(fiducial_vector(indexbin_j) - param_vector(indexbin_j)) + chi2 
+
+    !          End Do
+
+    !       End Do
+
+    !    Else
+
+    !       continue
+
+    !    End If
+
+    If (abs(chi2).ge.0.d0) then
+
+       euclid_galaxy_cl_likelihood = -chi2/2.d0   
+
+    Else
+
+       euclid_galaxy_cl_likelihood = -1.d10     
+
+    End If
+
+  end function euclid_galaxy_cl_likelihood
 
 End Module subroutines
