@@ -19,7 +19,7 @@ contains
        
     Else
 
-       call system('mkdir ./output')
+       call system('mkdir '//trim(OUTPUT)//'')
        
     End if
 
@@ -31,7 +31,7 @@ contains
 
     Else
 
-       call system('mkdir ./chains')
+       call system('mkdir '//trim(CHAINS)//'')
 
     End if
 
@@ -43,7 +43,7 @@ contains
 
     Else
 
-       call system('mkdir ./data')
+       call system('mkdir '//trim(DATA)//'')
 
     End if
 
@@ -55,7 +55,7 @@ contains
 
     Else
 
-       call system('mkdir ./covmat')
+       call system('mkdir '//trim(COVMAT)//'')
 
     End if
 
@@ -67,7 +67,7 @@ contains
 
     Else
 
-       call system('mkdir ./bestfit')
+       call system('mkdir '//trim(BESTFIT)//'')
 
     End if
 
@@ -79,7 +79,7 @@ contains
 
     Else
 
-       call system('mkdir ./figures')
+       call system('mkdir '//trim(FIGURES)//'')
 
     End if
     
@@ -116,6 +116,14 @@ contains
     Else if (likelihood .eq. 'euclid') then
 
        write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD'
+
+       write(UNIT_FILE1,*) 'ANALYSIS FOR: '
+
+       write(UNIT_FILE1,*) 'selection = ', selection
+
+       write(UNIT_FILE1,*) 'NUMBER OF BINS = ', nbins
+
+       write(UNIT_FILE1,*) 'LENSING = ', lensing
 
        call bin_centers_widths_bias()
 
