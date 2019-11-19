@@ -98,7 +98,7 @@ Module input
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/nfs/datos/wilmar.cardona/projects/dea'
+  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
