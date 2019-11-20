@@ -28,7 +28,7 @@ Module input
   Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
-  Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
+  Integer*4,parameter :: number_of_parameters = 11   ! TOTAL NUMBER VARYING PARAMETERS     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
   Integer*4,parameter :: UNIT_FILE2 = 81  ! UNIT NUMBER GETDIST FILES
   Integer*4,parameter :: UNIT_FILE3 = 82  ! UNIT NUMBER GETDIST FILES
@@ -62,7 +62,7 @@ Module input
 !  Real*8 :: acceptance_ratio  ! IT STORES ACCEPTANCE RATIO FOR CURRENT CHAIN
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
-  Logical,parameter :: lensing = .true.
+  Logical,parameter :: lensing = .false.
   Logical :: cl_current_found
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
@@ -74,7 +74,7 @@ Module input
   Real*8,parameter :: tau = 5.96d-2
   !Real*8,parameter :: sigma_tau = 8.9d-3
 
-  Integer*4,parameter :: nbins = 5
+  Integer*4,parameter :: nbins = 10
   Integer*4,parameter :: lmax_class = 2000
   Integer*4,parameter :: lmin = 2
   Integer*4,parameter :: lmax = 400
@@ -98,8 +98,7 @@ Module input
 
   ! PATHS TO FILES:
 
-  !Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea'
-  Character(len=*),parameter :: ROOT_PATH = '/home/wilmar/software/mcmc'
+  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea/g10nl/MII'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
