@@ -40,7 +40,7 @@ Program mcmc
 
   allocate (El(lmin:lmax,0:nbins,0:nbins),Cl_fid(lmin:lmax,0:nbins,0:nbins),&
        Cl_obs(lmin:lmax,0:nbins,0:nbins), Cl_current(lmin:lmax,0:nbins,0:nbins),&
-       Nl(1:nbins,1:nbins))
+       Nl(1:nbins,1:nbins),Elnl(lmin:lmax,0:nbins,0:nbins))
   
   call load_data()   ! LOAD DATA
 
@@ -70,7 +70,7 @@ Program mcmc
   
   call fgsl_rng_free(r)
 
-  deallocate(Nl,El,Cl_fid,Cl_obs,Cl_current) 
+  deallocate(Nl,El,Elnl,Cl_fid,Cl_obs,Cl_current) 
   
   close(UNIT_FILE1)
 

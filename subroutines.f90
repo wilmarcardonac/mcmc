@@ -405,19 +405,47 @@ contains
 
        If (exist) then 
 
-          write(UNIT_FILE1,*) 'READING ERROR FILE'
+          write(UNIT_FILE1,*) 'READING ERROR FILE WITH LENSING'
           
           call read_spectra('El',El)
 
        Else
 
-          write(UNIT_FILE1,*) 'COMPUTING ERROR FILE'
+          write(UNIT_FILE1,*) 'COMPUTING ERROR FILE WITH LENSING'
           
           call write_ini_file(parameters(:)%mean,'El')
 
           call compute_spectra('El')
 
           call read_spectra('El',El)
+
+       End If
+
+       If (lensing) then
+
+          continue
+
+       Else
+
+          inquire(file=ELNL_FILE,exist=exist)
+
+          If (exist) then 
+
+             write(UNIT_FILE1,*) 'READING ERROR FILE WITHOUT LENSING'
+
+             call read_spectra('Elnl',Elnl)
+
+          Else
+
+             write(UNIT_FILE1,*) 'COMPUTING ERROR FILE WITHOUT LENSING'
+
+             call write_ini_file(parameters(:)%mean,'Elnl')
+
+             call compute_spectra('Elnl')
+
+             call read_spectra('Elnl',Elnl)
+
+          End If
 
        End If
 
@@ -457,7 +485,7 @@ contains
 
     Character(len=*) :: spectra
 
-    If ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) then
+    If ( ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) .or. (spectra .eq. 'Elnl') ) then
        
        call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(HIGH_PRE)//'')
 
@@ -495,7 +523,17 @@ contains
           open(UNIT_FILE10,file=EL_FILE)
 
        End If
-       
+
+    Else if (spectra .eq. 'Elnl') then
+
+       inquire(file=ELNL_FILE,exist=exist)
+
+       If (exist) then
+
+          open(UNIT_FILE10,file=ELNL_FILE)
+
+       End If
+
     Else if (spectra .eq. 'Clfid') then
 
        inquire(file=CLFID_FILE,exist=exist)
@@ -1224,6 +1262,12 @@ contains
 
        write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
 
+    Else if (spectra .eq. 'Elnl') then 
+
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Elnl_'
+
+       write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
+
     Else if (spectra .eq. 'Clfid') then
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfid_'
@@ -1248,9 +1292,7 @@ contains
 
     End if
 
-    ! Background parameters and anisotropic stress
-
-    If ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid')) then
+    If ( ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) .or. (spectra .eq. 'Elnl') ) then
 
        Do index=1,number_of_parameters
 
@@ -1268,32 +1310,6 @@ contains
 
     End If
 
-!    write(UNIT_FILE1,'(a6, es16.10)') 'A_s = ', parameter_value  
-
-!    write(UNIT_FILE1,'(a6, es16.10)') 'n_s = ', parameter_value
-
-!    write(UNIT_FILE1,'(a5, es16.10)') 'H0 = ', parameter_value
-
-!    write(UNIT_FILE1,'(a10, es16.10)') 'omega_b = ', parameter_value
-
-!    write(UNIT_FILE1,'(a12, es16.10)') 'omega_cdm = ', parameter_value
-
-!    write(UNIT_FILE1,'(a9, es16.10)') 'm_ncdm = ', parameter_value
-
-!    write(UNIT_FILE1,'(a13, es16.10)') 'nc_bias_b0 = ', parameter_value
-
-!    write(UNIT_FILE1,'(a13, es17.10)') 'log10ceff2 = ', log10(cs2_fld-2.d0*f_pi/3.d0)
-
-!    write(UNIT_FILE1,'(a13, es17.10)') 'log10ceff2 = ', parameter_value
-
-!    write(UNIT_FILE1,'(a9, es17.10)') 'w0_fld = ', parameter_value
-
-!    write(UNIT_FILE1,'(a7, es17.10)') 'e_pi = ', parameter_value
-
-!    write(UNIT_FILE1,'(a7, es17.10)') 'f_pi = ', parameter_value
-
-!    write(UNIT_FILE1,'(a12, es16.10)') 'log10g_pi = ', parameter_value
-
     write(UNIT_FILE9,'(a11, es16.10)') 'tau_reio = ', tau
 
     write(UNIT_FILE9,'(a7, f5.3)') 'N_ur = ', real(N_ur)
@@ -1306,15 +1322,12 @@ contains
 
     write(UNIT_FILE9,'(a15,f5.3)') 'Omega_Lambda = ', real(0.)
 
-    ! Number counts in the output                                                                                            
-
     write(UNIT_FILE9,'(a12)') 'output = nCl'
 
     write(UNIT_FILE9,'(a32)') 'dNdz_selection = analytic_euclid'
 
     write(UNIT_FILE9,'(a32)') 'dNdz_evolution = analytic_euclid'
 
-!    write(UNIT_FILE9,'(a20)') 'selection = gaussian'
     write(UNIT_FILE9,*) 'selection = '//trim(selection)//' '
 
     If (nbins .eq. 5) then
@@ -1562,9 +1575,18 @@ contains
              Clth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*(Cl(indexl,indexbin_i,indexbin_j) + &
                   El(indexl,indexbin_i,indexbin_j) )/dble(indexl)/(dble(indexl) + 1.d0) + Nl(indexbin_i,indexbin_j)
 
-             Elth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*El(indexl,indexbin_i,indexbin_j)/&
-                  dble(indexl)/(dble(indexl) + 1.d0)*sqrt(dble(L))
+             If (lensing) then
+                
+                Elth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*El(indexl,indexbin_i,indexbin_j)/&
+                     dble(indexl)/(dble(indexl) + 1.d0)*sqrt(dble(L))
 
+             Else
+
+                Elth(indexl,indexbin_i,indexbin_j) = 2.d0*Pi*Elnl(indexl,indexbin_i,indexbin_j)/&
+                     dble(indexl)/(dble(indexl) + 1.d0)*sqrt(dble(L))
+
+             End If
+             
           End Do
 
        End Do

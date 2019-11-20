@@ -52,7 +52,7 @@ Module input
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
-  Real*8, allocatable, dimension(:,:,:) :: El, Cl_fid, Cl_obs, Cl_current
+  Real*8, allocatable, dimension(:,:,:) :: El, Elnl, Cl_fid, Cl_obs, Cl_current
   Real*8 :: jumping_factor = 2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
   Real*8 :: old_loglikelihood,current_loglikelihood      ! STORE LIKELIHOOD VALUES
   Real*4,dimension(number_iterations) :: acceptance_probability
@@ -98,7 +98,8 @@ Module input
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea'
+  !Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea'
+  Character(len=*),parameter :: ROOT_PATH = '/home/wilmar/software/mcmc'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
@@ -116,6 +117,7 @@ Module input
   Character(len=*),parameter :: BESTFIT_FILE = BESTFIT//trim('/bestfit')//'.txt'
   Character(len=*),parameter :: INI_FILE = OUTPUT//trim('/')//'file.ini'
   Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
+  Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl_cl')//'.dat'
   Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
   Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
   
