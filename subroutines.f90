@@ -185,13 +185,13 @@ contains
 
        If (number_of_parameters .eq. 10) then
 
-          parameters(8)%name = 'log10ceff2'
+          parameters(8)%name = 'log10cs2_fld'
           parameters(8)%mean = 0.d0
           parameters(8)%lower_limit = -3.d3
           parameters(8)%upper_limit = 0.d0
           parameters(8)%sigma = 1.0d-1
           parameters(8)%scale = 1.d0
-          parameters(8)%latexname = '\log c_{eff}^2'
+          parameters(8)%latexname = '\log c_s^2'
 
        Else if (number_of_parameters .eq. 11) then
 
