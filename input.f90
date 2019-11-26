@@ -94,7 +94,7 @@ Module input
   Real*8,parameter :: s_2 = -0.0671d0
   Real*8,parameter :: s_3 = 0.1031d0
   
-  Character(len=*),parameter :: selection = 'gaussian' ! OPTIONS: 'tophat', 'gaussian'
+  Character(len=*),parameter :: selection = 'tophat' ! OPTIONS: 'tophat', 'gaussian'
 
   ! PATHS TO FILES:
 
