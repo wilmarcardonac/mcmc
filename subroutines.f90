@@ -465,8 +465,12 @@ contains
 
           call compute_spectra('Clfid')
 
+          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS COMPUTED'
+          
           call read_spectra('Clfid',Cl_fid)
 
+          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS READ ',Cl_fid(2,1,1)
+          
        End If
 
        write(UNIT_FILE1,*) 'COMPUTING OBSERVED CL'
