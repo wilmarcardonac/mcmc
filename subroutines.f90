@@ -495,7 +495,15 @@ contains
 
     Else if (spectra .eq. 'Cl') then
 
-       call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE)//'')       
+       If ( (selection .eq. 'tophat') .and. (nbins .eq. 5) ) then
+          
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')       
+
+       Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 5) ) then
+
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G5)//'')
+          
+       End If
        
     Else
 
@@ -1088,12 +1096,6 @@ contains
 
     status = fgsl_matrix_align(af, n, n, n, a)
 
-    !    status = fgsl_linalg_LU_decomp (a, q, signum)
-
-!    det_matrix = fgsl_linalg_LU_det(a,signum)
-
-!    If (abs(det_matrix) .gt. 0.d0) then
-
     std = fgsl_set_error_handler_off()
 
     status = fgsl_linalg_cholesky_decomp1(a)
@@ -1114,12 +1116,6 @@ contains
     
     End If
        
- !Else
-
- !      write(UNIT_FILE1,*) 'SINGULAR COVARIANCE MATRIX FOUND. COVARIANCE MATRIX WAS NOT UPDATED'
-       
- !   End If
-
     call fgsl_matrix_free(a)
 
     call fgsl_permutation_free(q)
