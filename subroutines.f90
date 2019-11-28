@@ -465,12 +465,12 @@ contains
 
           call compute_spectra('Clfid')
 
-          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS COMPUTED'
+          write(UNIT_FILE1,*) 'FIDUCIAL CL COMPUTED'
           
           call read_spectra('Clfid',Cl_fid)
 
-          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS READ ',Cl_fid(2,1,1)
-          
+          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS READ'
+
        End If
 
        write(UNIT_FILE1,*) 'COMPUTING OBSERVED CL'
@@ -495,7 +495,15 @@ contains
 
     Else if (spectra .eq. 'Cl') then
 
-       call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE)//'')       
+       If ( (selection .eq. 'tophat') .and. (nbins .eq. 5) ) then
+          
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')       
+
+       Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 5) ) then
+
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G5)//'')
+          
+       End If
        
     Else
 
@@ -966,6 +974,7 @@ contains
     real(fgsl_double), target :: af(n, n)
     type(fgsl_permutation) :: q
     real(fgsl_double) :: det_matrix
+    type(fgsl_error_handler_t) :: std, off
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
     q = fgsl_permutation_alloc(n)
@@ -1086,23 +1095,29 @@ contains
     af = matrix
 
     status = fgsl_matrix_align(af, n, n, n, a)
-    status = fgsl_linalg_LU_decomp (a, q, signum)
 
-    det_matrix = fgsl_linalg_LU_det(a,signum)
+    std = fgsl_set_error_handler_off()
 
-    If (abs(det_matrix) .gt. 0.d0) then
-    
-       Cov_mat = matrix
+    status = fgsl_linalg_cholesky_decomp1(a)
 
-       write(UNIT_FILE1,*) 'COVARIANCE MATRIX UPDATED'
-       
+    off = fgsl_set_error_handler(std)
+
+    If (status .eq. fgsl_edom) then
+
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX WAS NOT UPDATED'
+
     Else
 
-       write(UNIT_FILE1,*) 'SINGULAR COVARIANCE MATRIX FOUND. COVARIANCE MATRIX WAS NOT UPDATED'
+       Cov_mat = matrix
        
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX UPDATED'
+    
     End If
-
+       
     call fgsl_matrix_free(a)
+
     call fgsl_permutation_free(q)
 
   end subroutine compute_cov_mat
@@ -1161,13 +1176,21 @@ contains
   end subroutine write_cov_mat
 
   subroutine read_cov_mat()
-    
+
     use input
+    use fgsl
     
     Implicit none
     
     Integer*4 :: index1
     Logical :: exist 
+
+    integer(fgsl_size_t), parameter :: n = number_of_parameters 
+    type(fgsl_matrix) :: a
+    integer(fgsl_int) :: status
+    real(fgsl_double), target :: af(n, n)
+
+    type(fgsl_error_handler_t) :: std, off
 
     inquire(file=COVMAT_FILE,exist=exist)
 
@@ -1182,6 +1205,32 @@ contains
        End Do
 
        close(UNIT_FILE6)
+
+       af = Cov_mat
+
+       a = fgsl_matrix_init(type=1.0_fgsl_double)
+    
+       status = fgsl_matrix_align(af, n, n, n, a)
+
+       std = fgsl_set_error_handler_off()
+       
+       status = fgsl_linalg_cholesky_decomp1(a)
+
+       off = fgsl_set_error_handler(std)
+       
+       call fgsl_matrix_free(a)
+
+       If (status .eq. fgsl_edom) then
+
+          write(UNIT_FILE1,*) 'COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+          stop
+          
+       Else
+
+          continue
+          
+       End If
        
     Else
 

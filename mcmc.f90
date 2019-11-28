@@ -52,8 +52,8 @@ Program mcmc
   
   write(UNIT_FILE1,*) '# WEIGHT   -ln(L/L_{max})    ', parameters(1:number_of_parameters)%name
 
-  write(UNIT_FILE1,*) 'ln(L/L_{max}) AT STARTING POINT IS = ', old_loglikelihood
-  
+  write(UNIT_FILE1,*) 'ln(L/L_{max}) AT STARTING POINT = ', old_loglikelihood
+
   Do index=1,number_iterations
      
      call generate_new_point_in_parameter_space()   ! GENERATE NEW POINT IN PARAMETER SPACE AND DECIDE ABOUT PLAUSIBILITY
