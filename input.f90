@@ -25,7 +25,7 @@ Module input
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
@@ -98,7 +98,7 @@ Module input
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea/g10l/MI'
+  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea/g10nl/MI'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
