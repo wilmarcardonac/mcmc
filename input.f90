@@ -25,7 +25,7 @@ Module input
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
@@ -94,11 +94,11 @@ Module input
   Real*8,parameter :: s_2 = -0.0671d0
   Real*8,parameter :: s_3 = 0.1031d0
   
-  Character(len=*),parameter :: selection = 'tophat' ! OPTIONS: 'tophat', 'gaussian'
+  Character(len=*),parameter :: selection = 'gaussian' ! OPTIONS: 'tophat', 'gaussian'
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea/g10nl/MI'
+  Character(len=*),parameter :: ROOT_PATH = '/datos/wilmar.cardona/projects/dea/g10l/MI'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
@@ -124,5 +124,6 @@ Module input
   Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss.pre'
   Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
   Character(len=*),parameter :: LOW_PRE_T5 = './class_EFCLASS/cl_lss_low_t5.pre'
+  Character(len=*),parameter :: LOW_PRE_G10 = './class_EFCLASS/cl_lss_low_g10.pre'
   
 End Module input
