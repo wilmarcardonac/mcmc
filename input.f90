@@ -48,7 +48,7 @@ Module input
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 5.d-2      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
@@ -56,8 +56,8 @@ Module input
   Real*8 :: jumping_factor = 2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
   Real*8 :: old_loglikelihood,current_loglikelihood      ! STORE LIKELIHOOD VALUES
   Real*4,dimension(number_iterations) :: acceptance_probability
-  Real*4,parameter :: lower_limit_ap = 0.25! LOWER LIMIT ACCEPTANCE PROBABILITY
-  Real*4,parameter :: upper_limit_ap = 0.3! UPPER LIMIT ACCEPTANCE PROBABILITY
+  Real*4,parameter :: lower_limit_ap = 0.1! LOWER LIMIT ACCEPTANCE PROBABILITY
+  Real*4,parameter :: upper_limit_ap = 0.4! UPPER LIMIT ACCEPTANCE PROBABILITY
   Real*4 :: average_ap ! AVERAGE ACCEPTANCE PROBABILITY
 !  Real*8 :: acceptance_ratio  ! IT STORES ACCEPTANCE RATIO FOR CURRENT CHAIN
 
