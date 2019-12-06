@@ -940,8 +940,6 @@ contains
           
           write(UNIT_FILE1,*) 'BAD CURRENT AVERAGE ACCEPTANCE PROBABILITY: ',average_ap
 
-          call write_bestfit()
-          
           stop
 
        End If
