@@ -29,7 +29,10 @@ Program mcmc
   call system('rm '//trim(OUTPUT)//'/*.ini '//trim(OUTPUT)//'/*.dat')
 
   open(UNIT_FILE1,file=EXECUTION_INFORMATION)
-
+  call compute_cov_mat()
+  call write_cov_mat()
+  call write_bestfit()
+  stop
   open(UNIT_FILE4,file=CHAIN_FILE)
 
   open(UNIT_FILE5,file=CHAIN_FILE_AUX)
