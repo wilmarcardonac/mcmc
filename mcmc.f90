@@ -68,6 +68,8 @@ Program mcmc
      
   End Do
 
+  call write_cov_mat()
+
   write(UNIT_FILE1,*) 'CODE SUCCESSFULLY ENDS EXECUTION'
   
   call fgsl_rng_free(r)
