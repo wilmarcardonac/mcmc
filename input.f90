@@ -27,7 +27,7 @@ Module input
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
   
-  Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
+  Integer*4,parameter :: number_iterations = 10000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
   Integer*4,parameter :: UNIT_FILE2 = 81  ! UNIT NUMBER GETDIST FILES
@@ -59,7 +59,6 @@ Module input
   Real*4,parameter :: lower_limit_ap = 0.1! LOWER LIMIT ACCEPTANCE PROBABILITY
   Real*4,parameter :: upper_limit_ap = 0.4! UPPER LIMIT ACCEPTANCE PROBABILITY
   Real*4 :: average_ap ! AVERAGE ACCEPTANCE PROBABILITY
-!  Real*8 :: acceptance_ratio  ! IT STORES ACCEPTANCE RATIO FOR CURRENT CHAIN
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
   Logical,parameter :: lensing = .true.

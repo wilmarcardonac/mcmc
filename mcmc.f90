@@ -30,8 +30,16 @@ Program mcmc
 
   open(UNIT_FILE1,file=EXECUTION_INFORMATION)
 
-  open(UNIT_FILE4,file=CHAIN_FILE)
+  If (starting_point .eq. 'last_point') then
 
+     continue
+
+  Else
+     
+     open(UNIT_FILE4,file=CHAIN_FILE)
+
+  End if
+  
   open(UNIT_FILE5,file=CHAIN_FILE_AUX)
 
   call initialisation() ! DEFINE STARTING POINT, COVARIANCE MATRIX, CREATE GETDIST FILES
@@ -44,10 +52,18 @@ Program mcmc
   
   call load_data()   ! LOAD DATA
 
-  call compute_theoretical_model()   ! COMPUTE THEORETICAL MODEL
+  If (starting_point .eq. 'last_point') then
 
-  call compute_ln_likelihood(current_point,old_loglikelihood)   ! READ THEORETICAL MODEL AND COMPUTE LIKELIHOOD
+     open(UNIT_FILE4,file=CHAIN_FILE,status="old",position="append",action="write") 
+     
+  Else
+     
+     call compute_theoretical_model()   ! COMPUTE THEORETICAL MODEL
 
+     call compute_ln_likelihood(current_point,old_loglikelihood)   ! READ THEORETICAL MODEL AND COMPUTE LIKELIHOOD
+
+  End if
+  
   write(UNIT_FILE1,*) 'HEADER FOR CHAIN FILE IS: '
   
   write(UNIT_FILE1,*) '# WEIGHT   -ln(L/L_{max})    ', parameters(1:number_of_parameters)%name
@@ -71,7 +87,14 @@ Program mcmc
   call write_cov_mat()
 
   call write_bestfit()
-  
+
+  average_ap = sum(acceptance_probability(steps_taken_before_definite_run+1:number_iterations))&
+	  /real(number_iterations-steps_taken_before_definite_run)
+
+  write(UNIT_FILE1,*) 'AVERAGE ACCEPTANCE PROBABILITY IS: ', average_ap
+
+  call system('python analyze.py')
+
   write(UNIT_FILE1,*) 'CODE SUCCESSFULLY ENDS EXECUTION'
   
   call fgsl_rng_free(r)

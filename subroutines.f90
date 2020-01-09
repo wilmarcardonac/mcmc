@@ -305,6 +305,7 @@ contains
     Implicit none
 
     Integer*4 :: index
+    Integer   :: stati
 
     write(UNIT_FILE1,*) 'STARTING POINT IS: '
     
@@ -336,9 +337,33 @@ contains
 
     Else if (starting_point .eq. 'last_point') then
 
-       write(UNIT_FILE1,*) 'last_point OPTION FOR starting_point PARAMETER NOT YET IMPLEMENTED'
+       open(UNIT_FILE4,file=CHAIN_FILE)
+       
+       Do index=1,number_iterations
 
-       stop
+          read(UNIT_FILE4,*,iostat=stati) weight,old_loglikelihood,old_point(1:number_of_parameters)
+
+          If (stati .ne. 0) then
+
+             exit
+
+          Else
+
+             continue
+
+          End if
+
+       End do
+
+       close(UNIT_FILE4)
+
+       old_loglikelihood = -old_loglikelihood
+
+       weight = 1
+
+       call system('head -n -1 '//trim(CHAIN_FILE)//' > '//trim(CHAIN_FILE_AUX)//'')
+
+       call system('cp '//trim(CHAIN_FILE_AUX)//' '//trim(CHAIN_FILE)//'')
 
     Else
 
