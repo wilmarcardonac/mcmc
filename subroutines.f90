@@ -954,7 +954,7 @@ contains
 
        write(UNIT_FILE1,*) 'CURRENT AVERAGE ACCEPTANCE PROBABILITY IS: ',average_ap
 
-    Else if ((mod(m,steps_taken_before_definite_run) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
+    Else if ((mod(m,covariance_matrix_update) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
 
        average_ap = sum(acceptance_probability(m-steps_taken_before_definite_run+1:m))&
             /real(steps_taken_before_definite_run)
