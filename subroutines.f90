@@ -129,8 +129,8 @@ contains
 
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
-       parameters(1)%lower_limit = 1.d-4
-       parameters(1)%upper_limit = 1.d-1
+       parameters(1)%lower_limit = 5.d-3
+       parameters(1)%upper_limit = 4.d-2
        parameters(1)%sigma = 1.5d-4
        parameters(1)%scale = 1.d0
        parameters(1)%latexname = '\omega_b'
@@ -305,6 +305,7 @@ contains
     Implicit none
 
     Integer*4 :: index
+    Integer   :: stati
 
     write(UNIT_FILE1,*) 'STARTING POINT IS: '
     
@@ -336,9 +337,33 @@ contains
 
     Else if (starting_point .eq. 'last_point') then
 
-       write(UNIT_FILE1,*) 'last_point OPTION FOR starting_point PARAMETER NOT YET IMPLEMENTED'
+       open(UNIT_FILE4,file=CHAIN_FILE)
+       
+       Do index=1,number_iterations
 
-       stop
+          read(UNIT_FILE4,*,iostat=stati) weight,old_loglikelihood,old_point(1:number_of_parameters)
+
+          If (stati .ne. 0) then
+
+             exit
+
+          Else
+
+             continue
+
+          End if
+
+       End do
+
+       close(UNIT_FILE4)
+
+       old_loglikelihood = -old_loglikelihood
+
+       weight = 1
+
+       call system('head -n -1 '//trim(CHAIN_FILE)//' > '//trim(CHAIN_FILE_AUX)//'')
+
+       call system('cp '//trim(CHAIN_FILE_AUX)//' '//trim(CHAIN_FILE)//'')
 
     Else
 
@@ -929,7 +954,7 @@ contains
 
        write(UNIT_FILE1,*) 'CURRENT AVERAGE ACCEPTANCE PROBABILITY IS: ',average_ap
 
-    Else if ((mod(m,steps_taken_before_definite_run) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
+    Else if ((mod(m,covariance_matrix_update) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
 
        average_ap = sum(acceptance_probability(m-steps_taken_before_definite_run+1:m))&
             /real(steps_taken_before_definite_run)
