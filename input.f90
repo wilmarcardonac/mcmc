@@ -48,7 +48,7 @@ Module input
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 5.d-2      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 2.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
