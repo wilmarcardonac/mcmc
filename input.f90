@@ -25,7 +25,7 @@ Module input
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'random' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 10000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
