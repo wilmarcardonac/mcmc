@@ -10,7 +10,7 @@ import os,fnmatch
 
 #number_of_parameters = 10
 
-samples = loadMCSamples('./chains/mcmc_final_output',settings={'ignore_rows':.0})
+samples = loadMCSamples('/datos/wilmar.cardona/projects/dea/g5nl/MI/chains/mcmc_final_output',settings={'ignore_rows':.0})
 
 
 #print 'CONVERGENCE FOR SAMPLES WITH LENSING ', samples.getGelmanRubin()
