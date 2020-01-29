@@ -24,7 +24,7 @@ Module input
 
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
-  Character(len=*),parameter :: starting_point = 'random' ! OPTIONS: 'mean','bestfit','random','last_point'
+  Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
   Integer*4,parameter :: number_iterations = 10000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
@@ -48,7 +48,7 @@ Module input
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 2.d-1      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
