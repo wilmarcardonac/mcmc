@@ -747,8 +747,6 @@ contains
 
     If (plausible_parameters) then
 
-       print *, 'TRUE'
-       
        If (likelihood .eq. 'gaussian') then
 
           cl_current_found = .true.
@@ -767,8 +765,6 @@ contains
 
     Else
 
-       print *, 'FALSE', point
-       
        cl_current_found = .false.
        
     End if
