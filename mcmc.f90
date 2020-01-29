@@ -93,8 +93,8 @@ Program mcmc
 
   write(UNIT_FILE1,*) 'AVERAGE ACCEPTANCE PROBABILITY IS: ', average_ap
 
-  call system('python analyze.py')
-
+  call system('python analyse.py')
+     
   write(UNIT_FILE1,*) 'CODE SUCCESSFULLY ENDS EXECUTION'
   
   call fgsl_rng_free(r)

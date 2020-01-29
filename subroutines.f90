@@ -115,6 +115,8 @@ contains
        
     Else if (likelihood .eq. 'euclid') then
 
+       cl_current_found = .false.
+
        write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD'
 
        write(UNIT_FILE1,*) 'ANALYSIS FOR: '
@@ -208,7 +210,7 @@ contains
        parameters(9)%name = 'w0_fld'
        parameters(9)%mean = -8.0d-1
        parameters(9)%lower_limit = -2.d0
-       parameters(9)%upper_limit = 0.d0
+       parameters(9)%upper_limit = -3.d-1
        parameters(9)%sigma = 2.2d-1
        parameters(9)%scale = 1.d0
        parameters(9)%latexname = 'w'
@@ -717,35 +719,14 @@ contains
 
     Implicit none
 
-    If (likelihood .eq. 'gaussian') then
-
-       continue
-       
-    Else if (likelihood .eq. 'euclid') then
-
-       call write_ini_file(current_point,'Cl')
-
-       call compute_spectra('Cl')
-
-       call read_spectra('Cl',Cl_current)
-
-    End if
-    
-  end subroutine compute_theoretical_model
-
-  subroutine compute_ln_likelihood(point,lnlikelihood)
-
-    use input
-    
-    Implicit none
-
     Integer*4 :: index
     Real*8,dimension(number_of_parameters) :: point
-    Real*8 :: lnlikelihood
     Logical :: plausible_parameters
     Logical,dimension(number_of_parameters) :: plausibility
 
     Do index=1,number_of_parameters
+
+       point(index) = current_point(index)
 
        plausibility(index) = (point(index) .lt. parameters(index)%lower_limit) .or. &
             (point(index) .gt. parameters(index)%upper_limit) 
@@ -759,37 +740,64 @@ contains
        Else
 
           plausible_parameters = .true.
-          
+
        End if
        
     End Do
 
     If (plausible_parameters) then
+
+       If (likelihood .eq. 'gaussian') then
+
+          cl_current_found = .true.
+
+          continue
+
+       Else if (likelihood .eq. 'euclid') then
+
+          call write_ini_file(current_point,'Cl')
+
+          call compute_spectra('Cl')
+
+          call read_spectra('Cl',Cl_current)
+
+       End if
+
+    Else
+
+       cl_current_found = .false.
+       
+    End if
+ 
+  end subroutine compute_theoretical_model
+
+  subroutine compute_ln_likelihood(point,lnlikelihood)
+
+    use input
+    
+    Implicit none
+
+    Real*8,dimension(number_of_parameters) :: point
+    Real*8 :: lnlikelihood
+
+    If (cl_current_found) then
        
        If (likelihood .eq. 'gaussian') then
 
           lnlikelihood = log_Gaussian_likelihood(point)
 
        Else if (likelihood .eq. 'euclid') then
-
-          If (cl_current_found) then
-
-             lnlikelihood = euclid_galaxy_cl_likelihood(Cl_current)
-
-          Else
-             
-             lnlikelihood = -1.d10 
-
-          End if
           
-       End If
+          lnlikelihood = euclid_galaxy_cl_likelihood(Cl_current)
 
-    Else
-
-       lnlikelihood = -1.d10
+       End if
        
-    End If
-    
+    Else
+             
+       lnlikelihood = -1.d10 
+
+    End if
+          
   end subroutine compute_ln_likelihood
 
   subroutine generate_new_point_in_parameter_space()
