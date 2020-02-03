@@ -49,7 +49,7 @@ means = samples.setMeans()
 
 stats = samples.getMargeStats()
 
-stats.saveAsText('./chains/1Dstatistics.txt')
+stats.saveAsText('/datos/wilmar.cardona/projects/dea/g5l/MI/chains/1Dstatistics.txt')
 
 print '1D STATISTICS FILE CREATED'
 
@@ -60,7 +60,7 @@ f.settings.rcSizes(axes_fontsize = 2,lab_fontsize = 7)
 f.plots_1d(samples)#,['omega_b','omega_cdm','n_s','ln1010As','H0','m_ncdm','nc_bias_b0','logcs2fld','w0_fld','e_pi'])#,markers=[2.225e-2,1.198e-1,9.645e-1,2.20652e-9,6.727e1,6.0e-2,1.],nx=3)
 #f.plots_1d(samples,['omega_b','omega_cdm','n_s','ln1010As','H0','m_ncdm','nc_bias_b0','logcs2fld','w0_fld','e_pi'])#,markers=[2.225e-2,1.198e-1,9.645e-1,2.20652e-9,6.727e1,6.0e-2,1.],nx=3)
 
-f.export('./chains/1D_plots.pdf')
+f.export('/datos/wilmar.cardona/projects/dea/g5l/MI/chains/1D_plots.pdf')
 
 print '1D PLOTS CREATED'
 
@@ -128,7 +128,7 @@ g.triangle_plot(samples)#,params=['omega_b','omega_cdm','n_s','ln1010As','H0','m
 #for ax in g.subplots[9,0:9]:
 #    ax.axhline(0.,color='black',ls='dotted')
 
-g.export('./chains/triangle_figure.pdf')
+g.export('/datos/wilmar.cardona/projects/dea/g5l/MI/chains/triangle_figure.pdf')
 
 print 'TRIANGLE PLOT CREATED'
 
