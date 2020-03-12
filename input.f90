@@ -27,7 +27,7 @@ Module input
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
   
-  Integer*4,parameter :: number_iterations = 120000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
+  Integer*4,parameter :: number_iterations = 110000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
   Integer*4,parameter :: UNIT_FILE2 = 81  ! UNIT NUMBER GETDIST FILES
@@ -43,12 +43,12 @@ Module input
   Integer*4 :: number_rejected_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: weight = 1 ! COUNTS NUMBER OF TAKEN STEPS BEFORE MOVING TO A NEW POINT
   Integer*4,parameter    :: jumping_factor_update = 250    ! STEPS TAKEN BEFORE UPDATING JUMPING FACTOR (IF NEEDED)
-  Integer*4,parameter    :: steps_taken_before_definite_run = 20000 !10000 !5000!10000!0 ! STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
+  Integer*4,parameter    :: steps_taken_before_definite_run = 10000 !10000 !5000!10000!0 ! STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
   Integer*4,parameter    :: covariance_matrix_update = 2000 !5000!10000!0 ! STEPS TAKEN BEFORE UPDATING COVARIANCE MATRIX (IF NEEDED)
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 2.d-1      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 4.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
