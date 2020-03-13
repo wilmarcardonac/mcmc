@@ -24,8 +24,6 @@ Program mcmc
   ! CODE STARTS EXECUTION
   !######################
 
-  call system('pwd')
-  stop
   call create_directories_if_needed()
 
   call system('rm '//trim(OUTPUT)//'/*.ini '//trim(OUTPUT)//'/*.dat')
