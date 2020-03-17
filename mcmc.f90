@@ -26,7 +26,7 @@ Program mcmc
 
   call create_directories_if_needed()
 
-  call system('rm '//trim(OUTPUT)//'/*.ini '//trim(OUTPUT)//'/*.dat')
+!  call system('rm '//trim(OUTPUT)//'/*.ini '//trim(OUTPUT)//'/*.dat')
 
   open(UNIT_FILE1,file=EXECUTION_INFORMATION)
 
