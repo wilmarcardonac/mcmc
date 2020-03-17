@@ -28,7 +28,7 @@ Program mcmc
 
   call system('rm '//trim(OUTPUT)//'/*.ini '//trim(OUTPUT)//'/*.dat')
 
-  open(UNIT_FILE1,file=EXECUTION_INFORMATION)
+  open(UNIT_FILE1,file=EXECUTION_INFORMATION,action='readwrite')
 
   If (starting_point .eq. 'last_point') then
 
