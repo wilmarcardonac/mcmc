@@ -19,7 +19,7 @@ contains
        
     Else
 
-       call system('mkdir '//trim(OUTPUT)//'')
+       call system('mkdir -p'//trim(OUTPUT)//'')
        
     End if
 
@@ -31,7 +31,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(CHAINS)//'')
+       call system('mkdir -p'//trim(CHAINS)//'')
 
     End if
 
@@ -43,7 +43,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(DATA)//'')
+       call system('mkdir -p'//trim(DATA)//'')
 
     End if
 
@@ -55,7 +55,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(COVMAT)//'')
+       call system('mkdir -p'//trim(COVMAT)//'')
 
     End if
 
@@ -67,7 +67,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(BESTFIT)//'')
+       call system('mkdir -p'//trim(BESTFIT)//'')
 
     End if
 
@@ -79,7 +79,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(FIGURES)//'')
+       call system('mkdir -p'//trim(FIGURES)//'')
 
     End if
     
