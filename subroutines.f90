@@ -19,7 +19,7 @@ contains
        
     Else
 
-       call system('mkdir '//trim(OUTPUT)//'')
+       call system('mkdir -p '//trim(OUTPUT)//'')
        
     End if
 
@@ -31,7 +31,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(CHAINS)//'')
+       call system('mkdir -p '//trim(CHAINS)//'')
 
     End if
 
@@ -43,7 +43,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(DATA)//'')
+       call system('mkdir -p '//trim(DATA)//'')
 
     End if
 
@@ -55,7 +55,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(COVMAT)//'')
+       call system('mkdir -p '//trim(COVMAT)//'')
 
     End if
 
@@ -67,7 +67,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(BESTFIT)//'')
+       call system('mkdir -p '//trim(BESTFIT)//'')
 
     End if
 
@@ -79,7 +79,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(FIGURES)//'')
+       call system('mkdir -p '//trim(FIGURES)//'')
 
     End if
     
@@ -115,6 +115,8 @@ contains
        
     Else if (likelihood .eq. 'euclid') then
 
+       cl_current_found = .false.
+
        write(UNIT_FILE1,*) 'WORKING WITH A FAKE EUCLID LIKELIHOOD'
 
        write(UNIT_FILE1,*) 'ANALYSIS FOR: '
@@ -130,7 +132,7 @@ contains
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
        parameters(1)%lower_limit = 1.d-4
-       parameters(1)%upper_limit = 1.d-1
+       parameters(1)%upper_limit = 4.d-2
        parameters(1)%sigma = 1.5d-4
        parameters(1)%scale = 1.d0
        parameters(1)%latexname = '\omega_b'
@@ -185,13 +187,13 @@ contains
 
        If (number_of_parameters .eq. 10) then
 
-          parameters(8)%name = 'log10ceff2'
+          parameters(8)%name = 'log10cs2_fld'
           parameters(8)%mean = 0.d0
           parameters(8)%lower_limit = -3.d3
           parameters(8)%upper_limit = 0.d0
           parameters(8)%sigma = 1.0d-1
           parameters(8)%scale = 1.d0
-          parameters(8)%latexname = '\log c_{eff}^2'
+          parameters(8)%latexname = '\log c_s^2'
 
        Else if (number_of_parameters .eq. 11) then
 
@@ -208,7 +210,7 @@ contains
        parameters(9)%name = 'w0_fld'
        parameters(9)%mean = -8.0d-1
        parameters(9)%lower_limit = -2.d0
-       parameters(9)%upper_limit = 0.d0
+       parameters(9)%upper_limit = -3.d-1
        parameters(9)%sigma = 2.2d-1
        parameters(9)%scale = 1.d0
        parameters(9)%latexname = 'w'
@@ -305,6 +307,7 @@ contains
     Implicit none
 
     Integer*4 :: index
+    Integer   :: stati
 
     write(UNIT_FILE1,*) 'STARTING POINT IS: '
     
@@ -336,9 +339,33 @@ contains
 
     Else if (starting_point .eq. 'last_point') then
 
-       write(UNIT_FILE1,*) 'last_point OPTION FOR starting_point PARAMETER NOT YET IMPLEMENTED'
+       open(UNIT_FILE4,file=CHAIN_FILE)
+       
+       Do index=1,number_iterations
 
-       stop
+          read(UNIT_FILE4,*,iostat=stati) weight,old_loglikelihood,old_point(1:number_of_parameters)
+
+          If (stati .ne. 0) then
+
+             exit
+
+          Else
+
+             continue
+
+          End if
+
+       End do
+
+       close(UNIT_FILE4)
+
+       old_loglikelihood = -old_loglikelihood
+
+       weight = 1
+
+       call system('head -n -1 '//trim(CHAIN_FILE)//' > '//trim(CHAIN_FILE_AUX)//'')
+
+       call system('cp '//trim(CHAIN_FILE_AUX)//' '//trim(CHAIN_FILE)//'')
 
     Else
 
@@ -465,7 +492,11 @@ contains
 
           call compute_spectra('Clfid')
 
+          write(UNIT_FILE1,*) 'FIDUCIAL CL COMPUTED'
+          
           call read_spectra('Clfid',Cl_fid)
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL WAS READ'
 
        End If
 
@@ -491,7 +522,15 @@ contains
 
     Else if (spectra .eq. 'Cl') then
 
-       call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE)//'')       
+       If ( (selection .eq. 'tophat') .and. (nbins .eq. 5) ) then
+          
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')       
+
+       Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 5) ) then
+
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G5)//'')
+          
+       End If
        
     Else
 
@@ -680,35 +719,14 @@ contains
 
     Implicit none
 
-    If (likelihood .eq. 'gaussian') then
-
-       continue
-       
-    Else if (likelihood .eq. 'euclid') then
-
-       call write_ini_file(current_point,'Cl')
-
-       call compute_spectra('Cl')
-
-       call read_spectra('Cl',Cl_current)
-
-    End if
-    
-  end subroutine compute_theoretical_model
-
-  subroutine compute_ln_likelihood(point,lnlikelihood)
-
-    use input
-    
-    Implicit none
-
     Integer*4 :: index
     Real*8,dimension(number_of_parameters) :: point
-    Real*8 :: lnlikelihood
     Logical :: plausible_parameters
     Logical,dimension(number_of_parameters) :: plausibility
 
     Do index=1,number_of_parameters
+
+       point(index) = current_point(index)
 
        plausibility(index) = (point(index) .lt. parameters(index)%lower_limit) .or. &
             (point(index) .gt. parameters(index)%upper_limit) 
@@ -722,37 +740,64 @@ contains
        Else
 
           plausible_parameters = .true.
-          
+
        End if
        
     End Do
 
     If (plausible_parameters) then
+
+       If (likelihood .eq. 'gaussian') then
+
+          cl_current_found = .true.
+
+          continue
+
+       Else if (likelihood .eq. 'euclid') then
+
+          call write_ini_file(current_point,'Cl')
+
+          call compute_spectra('Cl')
+
+          call read_spectra('Cl',Cl_current)
+
+       End if
+
+    Else
+
+       cl_current_found = .false.
+       
+    End if
+ 
+  end subroutine compute_theoretical_model
+
+  subroutine compute_ln_likelihood(point,lnlikelihood)
+
+    use input
+    
+    Implicit none
+
+    Real*8,dimension(number_of_parameters) :: point
+    Real*8 :: lnlikelihood
+
+    If (cl_current_found) then
        
        If (likelihood .eq. 'gaussian') then
 
           lnlikelihood = log_Gaussian_likelihood(point)
 
        Else if (likelihood .eq. 'euclid') then
-
-          If (cl_current_found) then
-
-             lnlikelihood = euclid_galaxy_cl_likelihood(Cl_current)
-
-          Else
-             
-             lnlikelihood = -1.d10 
-
-          End if
           
-       End If
+          lnlikelihood = euclid_galaxy_cl_likelihood(Cl_current)
 
-    Else
-
-       lnlikelihood = -1.d10
+       End if
        
-    End If
-    
+    Else
+             
+       lnlikelihood = -1.d10 
+
+    End if
+          
   end subroutine compute_ln_likelihood
 
   subroutine generate_new_point_in_parameter_space()
@@ -917,7 +962,7 @@ contains
 
        write(UNIT_FILE1,*) 'CURRENT AVERAGE ACCEPTANCE PROBABILITY IS: ',average_ap
 
-    Else if ((mod(m,steps_taken_before_definite_run) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
+    Else if ((mod(m,covariance_matrix_update) .eq. 0) .and. (m .gt. steps_taken_before_definite_run) ) then
 
        average_ap = sum(acceptance_probability(m-steps_taken_before_definite_run+1:m))&
             /real(steps_taken_before_definite_run)
@@ -962,6 +1007,7 @@ contains
     real(fgsl_double), target :: af(n, n)
     type(fgsl_permutation) :: q
     real(fgsl_double) :: det_matrix
+    type(fgsl_error_handler_t) :: std, off
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
     q = fgsl_permutation_alloc(n)
@@ -1082,23 +1128,29 @@ contains
     af = matrix
 
     status = fgsl_matrix_align(af, n, n, n, a)
-    status = fgsl_linalg_LU_decomp (a, q, signum)
 
-    det_matrix = fgsl_linalg_LU_det(a,signum)
+    std = fgsl_set_error_handler_off()
 
-    If (abs(det_matrix) .gt. 0.d0) then
-    
-       Cov_mat = matrix
+    status = fgsl_linalg_cholesky_decomp1(a)
 
-       write(UNIT_FILE1,*) 'COVARIANCE MATRIX UPDATED'
-       
+    off = fgsl_set_error_handler(std)
+
+    If (status .eq. fgsl_edom) then
+
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX WAS NOT UPDATED'
+
     Else
 
-       write(UNIT_FILE1,*) 'SINGULAR COVARIANCE MATRIX FOUND. COVARIANCE MATRIX WAS NOT UPDATED'
+       Cov_mat = matrix
        
+       write(UNIT_FILE1,*) 'COVARIANCE MATRIX UPDATED'
+    
     End If
-
+       
     call fgsl_matrix_free(a)
+
     call fgsl_permutation_free(q)
 
   end subroutine compute_cov_mat
@@ -1157,13 +1209,21 @@ contains
   end subroutine write_cov_mat
 
   subroutine read_cov_mat()
-    
+
     use input
+    use fgsl
     
     Implicit none
     
     Integer*4 :: index1
     Logical :: exist 
+
+    integer(fgsl_size_t), parameter :: n = number_of_parameters 
+    type(fgsl_matrix) :: a
+    integer(fgsl_int) :: status
+    real(fgsl_double), target :: af(n, n)
+
+    type(fgsl_error_handler_t) :: std, off
 
     inquire(file=COVMAT_FILE,exist=exist)
 
@@ -1178,6 +1238,32 @@ contains
        End Do
 
        close(UNIT_FILE6)
+
+       af = Cov_mat
+
+       a = fgsl_matrix_init(type=1.0_fgsl_double)
+    
+       status = fgsl_matrix_align(af, n, n, n, a)
+
+       std = fgsl_set_error_handler_off()
+       
+       status = fgsl_linalg_cholesky_decomp1(a)
+
+       off = fgsl_set_error_handler(std)
+       
+       call fgsl_matrix_free(a)
+
+       If (status .eq. fgsl_edom) then
+
+          write(UNIT_FILE1,*) 'COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+          stop
+          
+       Else
+
+          continue
+          
+       End If
        
     Else
 
