@@ -61,7 +61,7 @@ Module input
   Real*4 :: average_ap ! AVERAGE ACCEPTANCE PROBABILITY
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
-  Logical,parameter :: lensing = .true.
+  Logical,parameter :: lensing = .false.
   Logical :: cl_current_found
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
