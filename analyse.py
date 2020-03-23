@@ -54,16 +54,16 @@ for ax in g.subplots[6:,6]:
     ax.axvline(1.,color='black',ls='--')
 
 for ax in g.subplots[7:,7]:
-    ax.axvline(0.,color='black',ls='--')
+    ax.axvline(-0.0132,color='black',ls='--')
 
 for ax in g.subplots[8:,8]:
     ax.axvline(-0.8,color='black',ls='--')
 
 for ax in g.subplots[9:,9]:
-    ax.axvline(0.,color='black',ls='--')
+    ax.axvline(5.,color='black',ls='--')
 
-for ax in g.subplots[9,0:9]:
-    ax.axhline(0.,color='black',ls='dotted')
+for ax in g.subplots[10:,10]:
+    ax.axvline(0.,color='black',ls='--')
 
 for ax in g.subplots[1,0:1]:
     ax.axhline(1.205e-1,color='black',ls='dotted')
@@ -84,12 +84,15 @@ for ax in g.subplots[6,0:6]:
     ax.axhline(1.,color='black',ls='dotted')
 
 for ax in g.subplots[7,0:7]:
-    ax.axhline(0.,color='black',ls='dotted')
+    ax.axhline(-0.0132,color='black',ls='dotted')
 
 for ax in g.subplots[8,0:8]:
     ax.axhline(-0.8,color='black',ls='dotted')
 
 for ax in g.subplots[9,0:9]:
+    ax.axhline(5.,color='black',ls='dotted')
+
+for ax in g.subplots[10,0:10]:
     ax.axhline(0.,color='black',ls='dotted')
 
 g.export('/home/projects/dea/mcmc/figures/triangle_figure.pdf')
