@@ -73,7 +73,7 @@ Module input
   Real*8,parameter :: tau = 5.96d-2
   !Real*8,parameter :: sigma_tau = 8.9d-3
 
-  Integer*4,parameter :: nbins = 5
+  Integer*4,parameter :: nbins = 10
   Integer*4,parameter :: lmax_class = 2000
   Integer*4,parameter :: lmin = 2
   Integer*4,parameter :: lmax = 400
