@@ -524,11 +524,19 @@ contains
 
        If ( (selection .eq. 'tophat') .and. (nbins .eq. 5) ) then
           
-          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')       
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')
+
+       Else if ( (selection .eq. 'tophat') .and. (nbins .eq. 10) ) then
+          
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T10)//'')
 
        Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 5) ) then
 
           call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G5)//'')
+
+       Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 10) ) then
+
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G10)//'')
           
        End If
        

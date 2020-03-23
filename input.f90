@@ -123,5 +123,7 @@ Module input
   Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss.pre'
   Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
   Character(len=*),parameter :: LOW_PRE_T5 = './class_EFCLASS/cl_lss_low_t5.pre'
+  Character(len=*),parameter :: LOW_PRE_G10 = './class_EFCLASS/cl_lss_low_g10.pre'
+  Character(len=*),parameter :: LOW_PRE_T10 = './class_EFCLASS/cl_lss_low_t10.pre'
   
 End Module input
