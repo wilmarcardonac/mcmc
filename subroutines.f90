@@ -19,7 +19,7 @@ contains
        
     Else
 
-       call system('mkdir '//trim(OUTPUT)//'')
+       call system('mkdir -p '//trim(OUTPUT)//'')
        
     End if
 
@@ -31,7 +31,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(CHAINS)//'')
+       call system('mkdir -p '//trim(CHAINS)//'')
 
     End if
 
@@ -43,7 +43,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(DATA)//'')
+       call system('mkdir -p '//trim(DATA)//'')
 
     End if
 
@@ -55,7 +55,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(COVMAT)//'')
+       call system('mkdir -p '//trim(COVMAT)//'')
 
     End if
 
@@ -67,7 +67,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(BESTFIT)//'')
+       call system('mkdir -p '//trim(BESTFIT)//'')
 
     End if
 
@@ -79,7 +79,7 @@ contains
 
     Else
 
-       call system('mkdir '//trim(FIGURES)//'')
+       call system('mkdir -p '//trim(FIGURES)//'')
 
     End if
     
@@ -132,7 +132,7 @@ contains
        parameters(1)%name = 'omega_b'
        parameters(1)%mean = 2.218d-2
        parameters(1)%lower_limit = 1.d-4
-       parameters(1)%upper_limit = 1.d-1
+       parameters(1)%upper_limit = 4.d-2
        parameters(1)%sigma = 1.5d-4
        parameters(1)%scale = 1.d0
        parameters(1)%latexname = '\omega_b'
