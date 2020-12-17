@@ -130,50 +130,50 @@ contains
        call bin_centers_widths_bias()
 
        parameters(1)%name = 'omega_b'
-       parameters(1)%mean = 2.218d-2
+       parameters(1)%mean = 2.247d-2
        parameters(1)%lower_limit = 1.d-4
        parameters(1)%upper_limit = 4.d-2
-       parameters(1)%sigma = 1.5d-4
+       parameters(1)%sigma = 1.3d-4
        parameters(1)%scale = 1.d0
        parameters(1)%latexname = '\omega_b'
 
        parameters(2)%name = 'omega_cdm'
-       parameters(2)%mean = 1.205d-1
+       parameters(2)%mean = 1.193d-1
        parameters(2)%lower_limit = 1.d-4
        parameters(2)%upper_limit = 1.d0
-       parameters(2)%sigma = 1.4d-3
+       parameters(2)%sigma = 7.7d-4
        parameters(2)%scale = 1.d0
        parameters(2)%latexname = '\omega_{cdm}'
 
        parameters(3)%name = 'n_s'
-       parameters(3)%mean = 9.619d-1
+       parameters(3)%mean = 9.679d-1
        parameters(3)%lower_limit = 9.d-2
        parameters(3)%upper_limit = 2.d0
-       parameters(3)%sigma = 4.5d-3
+       parameters(3)%sigma = 3.0d-3
        parameters(3)%scale = 1.d0
        parameters(3)%latexname = 'n_s'
 
        parameters(4)%name = 'ln10^{10}A_s'
-       parameters(4)%mean = 3.056d0 !2.12424d-9
+       parameters(4)%mean = 3.044d0 !2.12424d-9
        parameters(4)%lower_limit = 2.0d0 !1.d-11
        parameters(4)%upper_limit = 4.0d0
-       parameters(4)%sigma = 0.018d0 !3.82d-11
+       parameters(4)%sigma = 1.4d-2 !3.82d-11
        parameters(4)%scale = 1.d0
        parameters(4)%latexname = '\ln 10^{10} A_s'
 
        parameters(5)%name = 'H0'
-       parameters(5)%mean = 6.693d1
+       parameters(5)%mean = 6.738d1
        parameters(5)%lower_limit = 3.d1
        parameters(5)%upper_limit = 9.d1
-       parameters(5)%sigma = 0.62d0
+       parameters(5)%sigma = 5.3d-1
        parameters(5)%scale = 1.d0
        parameters(5)%latexname = 'H_0'
 
        parameters(6)%name = 'm_ncdm'
-       parameters(6)%mean = 6.0d-2
+       parameters(6)%mean = 3.1d-2
        parameters(6)%lower_limit = 0.d0
-       parameters(6)%upper_limit = 2.d0
-       parameters(6)%sigma = 5.d-3
+       parameters(6)%upper_limit = 5.d0
+       parameters(6)%sigma = 2.7d-2
        parameters(6)%scale = 1.d0
        parameters(6)%latexname = 'm_{\nu}'
 
@@ -185,65 +185,81 @@ contains
        parameters(7)%scale = 1.d0
        parameters(7)%latexname = 'b_0' 
 
-       If (number_of_parameters .eq. 10) then
+!!$       If (number_of_parameters .eq. 10) then
+!!$
+!!$          parameters(8)%name = 'log10cs2_fld'
+!!$          parameters(8)%mean = 0.d0
+!!$          parameters(8)%lower_limit = -3.d3
+!!$          parameters(8)%upper_limit = 0.d0
+!!$          parameters(8)%sigma = 1.0d-1
+!!$          parameters(8)%scale = 1.d0
+!!$          parameters(8)%latexname = '\log c_s^2'
+!!$
+!!$       Else if (number_of_parameters .eq. 11) then
+!!$
+!!$          parameters(8)%name = 'log10ceff2' 
+!!$          parameters(8)%mean = -0.0132d0
+!!$          parameters(8)%lower_limit = -3.d3
+!!$          parameters(8)%upper_limit = 0.d0
+!!$          parameters(8)%sigma = 1.0d-1
+!!$          parameters(8)%scale = 1.d0
+!!$          parameters(8)%latexname = '\log c_{eff}^2'
+!!$
+!!$       End if
 
-          parameters(8)%name = 'log10cs2_fld'
-          parameters(8)%mean = 0.d0
-          parameters(8)%lower_limit = -3.d3
-          parameters(8)%upper_limit = 0.d0
-          parameters(8)%sigma = 1.0d-1
-          parameters(8)%scale = 1.d0
-          parameters(8)%latexname = '\log c_s^2'
+       parameters(8)%name = 'w0_fld'
+       parameters(8)%mean = -9.8d-1
+       parameters(8)%lower_limit = -2.d0
+       parameters(8)%upper_limit = -3.d-1
+       parameters(8)%sigma = 1.6d-2
+       parameters(8)%scale = 1.d0
+       parameters(8)%latexname = 'w'
 
-       Else if (number_of_parameters .eq. 11) then
-
-          parameters(8)%name = 'log10ceff2' 
-          parameters(8)%mean = -0.0132d0
-          parameters(8)%lower_limit = -3.d3
-          parameters(8)%upper_limit = 0.d0
-          parameters(8)%sigma = 1.0d-1
-          parameters(8)%scale = 1.d0
-          parameters(8)%latexname = '\log c_{eff}^2'
-
-       End if
-
-       parameters(9)%name = 'w0_fld'
-       parameters(9)%mean = -8.0d-1
-       parameters(9)%lower_limit = -2.d0
-       parameters(9)%upper_limit = -3.d-1
-       parameters(9)%sigma = 2.2d-1
+       parameters(9)%name = 'tau_reio'
+       parameters(9)%mean = 5.43d-2
+       parameters(9)%lower_limit = 1.d-2
+       parameters(9)%upper_limit = 8.d-1
+       parameters(9)%sigma = 6.17d-3
        parameters(9)%scale = 1.d0
-       parameters(9)%latexname = 'w'
+       parameters(9)%latexname = '\tau_{reio}'
 
-       If (number_of_parameters .eq. 10) then
-          
-          parameters(10)%name = 'e_pi'
-          parameters(10)%mean = 0.0d0
-          parameters(10)%lower_limit = -2.d0
-          parameters(10)%upper_limit = 2.d0
-          parameters(10)%sigma = 1.0d-1
-          parameters(10)%scale = 1.d0
-          parameters(10)%latexname = 'e_{\pi}'
+       parameters(10)%name = 'alpha_model'
+       parameters(10)%mean = 7.23d-2
+       parameters(10)%lower_limit = 0.d0
+       parameters(10)%upper_limit = 1.d2
+       parameters(10)%sigma = 1.07d-2
+       parameters(10)%scale = 1.d0
+       parameters(10)%latexname = '\alpha_{model}'
 
-       Else if (number_of_parameters .eq. 11) then
-
-          parameters(10)%name = 'f_pi'
-          parameters(10)%mean = 5.0d0
-          parameters(10)%lower_limit = -3.d3
-          parameters(10)%upper_limit = 1.d1
-          parameters(10)%sigma = 1.0d-1
-          parameters(10)%scale = 1.d0
-          parameters(10)%latexname = 'f_{\pi}'
-
-          parameters(11)%name = 'log10g_pi'
-          parameters(11)%mean = 0.0d0 ! THIS IS ACTUALLY log10 g_pi
-          parameters(11)%lower_limit = -3.d1
-          parameters(11)%upper_limit = 3.d1
-          parameters(11)%sigma = 1.0d0 ! THIS IS THE ERROR ON log10 g_pi
-          parameters(11)%scale = 1.d0
-          parameters(11)%latexname = '\log g_{\pi}'
-
-       End if
+!!$       If (number_of_parameters .eq. 10) then
+!!$          
+!!$          parameters(10)%name = 'e_pi'
+!!$          parameters(10)%mean = 0.0d0
+!!$          parameters(10)%lower_limit = -2.d0
+!!$          parameters(10)%upper_limit = 2.d0
+!!$          parameters(10)%sigma = 1.0d-1
+!!$          parameters(10)%scale = 1.d0
+!!$          parameters(10)%latexname = 'e_{\pi}'
+!!$
+!!$       Else if (number_of_parameters .eq. 11) then
+!!$
+!!$          parameters(10)%name = 'f_pi'
+!!$          parameters(10)%mean = 5.0d0
+!!$          parameters(10)%lower_limit = -3.d3
+!!$          parameters(10)%upper_limit = 1.d1
+!!$          parameters(10)%sigma = 1.0d-1
+!!$          parameters(10)%scale = 1.d0
+!!$          parameters(10)%latexname = 'f_{\pi}'
+!!$
+!!$          parameters(11)%name = 'log10g_pi'
+!!$          parameters(11)%mean = 0.0d0 ! THIS IS ACTUALLY log10 g_pi
+!!$          parameters(11)%lower_limit = -3.d1
+!!$          parameters(11)%upper_limit = 3.d1
+!!$          parameters(11)%sigma = 1.0d0 ! THIS IS THE ERROR ON log10 g_pi
+!!$          parameters(11)%scale = 1.d0
+!!$          parameters(11)%latexname = '\log g_{\pi}'
+!!$
+!!$       End if
        
     Else
 
