@@ -2071,7 +2071,8 @@ contains
 
                 Do indexbin_j=1,number_of_prior_parameters
 
-                   If ( (parameters(indexbin_k)%name .eq. prior_parameters(indexbin_i)%name) .and. (parameters(indexbin_p)%name .eq. prior_parameters(indexbin_j)%name) ) then 
+                   If ( (parameters(indexbin_k)%name .eq. prior_parameters(indexbin_i)%name) .and. &
+                        (parameters(indexbin_p)%name .eq. prior_parameters(indexbin_j)%name) ) then 
 
                    
                       chi2 = (prior_parameters(indexbin_i)%mean-current_point(indexbin_k))*inv_prior_cov(indexbin_i,&
