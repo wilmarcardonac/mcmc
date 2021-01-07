@@ -1632,7 +1632,8 @@ contains
 
     End if
 
-    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidnl') ) .or. ( (spectra .eq. 'Clfidhalofit') .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
+    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidnl') ) .or. ( (spectra .eq. 'Clfidhalofit')&
+         .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
 
        Do index=1,number_of_parameters
 
