@@ -260,7 +260,31 @@ contains
 !!$          parameters(11)%latexname = '\log g_{\pi}'
 !!$
 !!$       End if
-       
+    
+       prior_parameters(1)%name = 'omega_b'
+       prior_parameters(1)%mean = 2.247d-2
+
+       prior_parameters(2)%name = 'omega_cdm'
+       prior_parameters(2)%mean = 1.193d-1
+
+       prior_parameters(3)%name = 'n_s'
+       prior_parameters(3)%mean = 9.679d-1
+
+       prior_parameters(4)%name = 'ln10^{10}A_s'
+       prior_parameters(4)%mean = 3.044d0 !2.12424d-9
+
+       prior_parameters(5)%name = 'H0'
+       prior_parameters(5)%mean = 6.738d1
+
+       prior_parameters(6)%name = 'w0_fld'
+       prior_parameters(6)%mean = -9.8d-1
+
+       prior_parameters(7)%name = 'tau_reio'
+       prior_parameters(7)%mean = 5.43d-2
+
+       prior_parameters(8)%name = 'alpha_model'
+       prior_parameters(8)%mean = 7.23d-2
+
     Else
 
        write(UNIT_FILE1,*) 'CURRENT OPTIONS FOR LIKELIHHOD ARE: gaussian OR euclid. GIVEN UNRECOGNISED OPTION IN INPUT'
@@ -444,54 +468,6 @@ contains
        
        call compute_shot_noise()
 
-       inquire(file=EL_FILE,exist=exist)
-
-       If (exist) then 
-
-          write(UNIT_FILE1,*) 'READING ERROR FILE WITH LENSING'
-          
-          call read_spectra('El',El)
-
-       Else
-
-          write(UNIT_FILE1,*) 'COMPUTING ERROR FILE WITH LENSING'
-          
-          call write_ini_file(parameters(:)%mean,'El')
-
-          call compute_spectra('El')
-
-          call read_spectra('El',El)
-
-       End If
-
-       If (lensing) then
-
-          continue
-
-       Else
-
-          inquire(file=ELNL_FILE,exist=exist)
-
-          If (exist) then 
-
-             write(UNIT_FILE1,*) 'READING ERROR FILE WITHOUT LENSING'
-
-             call read_spectra('Elnl',Elnl)
-
-          Else
-
-             write(UNIT_FILE1,*) 'COMPUTING ERROR FILE WITHOUT LENSING'
-
-             call write_ini_file(parameters(:)%mean,'Elnl')
-
-             call compute_spectra('Elnl')
-
-             call read_spectra('Elnl',Elnl)
-
-          End If
-
-       End If
-
        inquire(file=CLFID_FILE,exist=exist)
 
        If (exist) then 
@@ -516,9 +492,141 @@ contains
 
        End If
 
+       inquire(file=CLFIDHALOFIT_FILE,exist=exist)
+
+       If (exist) then 
+
+          write(UNIT_FILE1,*) 'READING FIDUCIAL CL INCLUDING HALOFIT CORRECTIONS'
+          
+          call read_spectra('Clfidhalofit',Cl_fid_halofit)
+
+       Else
+
+          write(UNIT_FILE1,*) 'COMPUTING FIDUCIAL CL INCLUDING HALOFIT CORRECTIONS'
+          
+          call write_ini_file(parameters(:)%mean,'Clfidhalofit')
+
+          call compute_spectra('Clfidhalofit')
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL INCLUDING HALOFIT CORRECTIONS COMPUTED'
+          
+          call read_spectra('Clfidhalofit',Cl_fid_halofit)
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL INCLUDING HALOFIT CORRECTIONS WAS READ'
+
+       End If
+
+       inquire(file=CLFIDNL_FILE,exist=exist)
+
+       If (exist) then 
+
+          write(UNIT_FILE1,*) 'READING FIDUCIAL CL NEGLECTING LENSING'
+          
+          call read_spectra('Clfidnl',Cl_fid_nl)
+
+       Else
+
+          write(UNIT_FILE1,*) 'COMPUTING FIDUCIAL CL NEGLECTING LENSING'
+          
+          call write_ini_file(parameters(:)%mean,'Clfidnl')
+
+          call compute_spectra('Clfidnl')
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL NEGLECTING LENSING COMPUTED'
+          
+          call read_spectra('Clfidnl',Cl_fid_nl)
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL NEGLECTING LENSING WAS READ'
+
+       End If
+
+       inquire(file=CLFIDNLHALOFIT_FILE,exist=exist)
+
+       If (exist) then 
+
+          write(UNIT_FILE1,*) 'READING FIDUCIAL CL NEGLECTING LENSING AND INCLUDING HALOFIT CORRECTIONS'
+          
+          call read_spectra('Clfidnlhalofit',Cl_fid_nl_halofit)
+
+       Else
+
+          write(UNIT_FILE1,*) 'COMPUTING FIDUCIAL CL NEGLECTING LENSING AND INCLUDING HALOFIT CORRECTIONS'
+          
+          call write_ini_file(parameters(:)%mean,'Clfidnlhalofit')
+
+          call compute_spectra('Clfidnlhalofit')
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL NEGLECTING LENSING AND INCLUDING HALOFIT CORRECTIONS COMPUTED'
+          
+          call read_spectra('Clfidnlhalofit',Cl_fid_nl_halofit)
+
+          write(UNIT_FILE1,*) 'FIDUCIAL CL NEGLECTING LENSING AND INCLUDING HALOFIT CORRECTIONS WAS READ'
+
+       End If
+
+!!$       inquire(file=EL_FILE,exist=exist)
+!!$
+!!$       If (exist) then 
+!!$
+!!$          write(UNIT_FILE1,*) 'READING ERROR FILE INCLUDING LENSING'
+!!$          
+!!$          call read_spectra('El',El)
+!!$
+!!$       Else
+!!$
+!!$          write(UNIT_FILE1,*) 'COMPUTING ERROR FILE INCLUDING LENSING'
+!!$          
+!!$          call write_ini_file(parameters(:)%mean,'El')
+!!$
+!!$          call compute_spectra('El')
+!!$
+!!$          call read_spectra('El',El)
+!!$
+!!$       End If
+!!$
+!!$       If (lensing) then
+!!$
+!!$          continue
+!!$
+!!$       Else
+!!$
+!!$          inquire(file=ELNL_FILE,exist=exist)
+!!$
+!!$          If (exist) then 
+!!$
+!!$             write(UNIT_FILE1,*) 'READING ERROR FILE NEGLECTING LENSING'
+!!$
+!!$             call read_spectra('Elnl',Elnl)
+!!$
+!!$          Else
+!!$
+!!$             write(UNIT_FILE1,*) 'COMPUTING ERROR FILE NEGLECTING LENSING'
+!!$
+!!$             call write_ini_file(parameters(:)%mean,'Elnl')
+!!$
+!!$             call compute_spectra('Elnl')
+!!$
+!!$             call read_spectra('Elnl',Elnl)
+!!$
+!!$          End If
+!!$
+!!$       End If
+
        write(UNIT_FILE1,*) 'COMPUTING OBSERVED CL'
        
        call compute_observed_Cl()
+
+       If (use_gaussian_planck_prior) then
+
+          call read_prior_cov()
+
+          call compute_inv_prior_cov(prior_cov)
+
+       Else
+
+          continue
+
+       End if
        
     End If
 
@@ -532,7 +640,7 @@ contains
 
     Character(len=*) :: spectra
 
-    If ( ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) .or. (spectra .eq. 'Elnl') ) then
+    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidhalofit') ) .or. ( (spectra .eq. 'Clfidnl') .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
        
        call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(HIGH_PRE)//'')
 
@@ -542,9 +650,17 @@ contains
           
           call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T5)//'')       
 
+       Else if ( (selection .eq. 'tophat') .and. (nbins .eq. 10) ) then
+          
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_T10)//'')       
+
        Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 5) ) then
 
           call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G5)//'')
+
+       Else if ( (selection .eq. 'gaussian') .and. (nbins .eq. 10) ) then
+
+          call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(LOW_PRE_G10)//'')
           
        End If
        
@@ -569,33 +685,43 @@ contains
 
     Logical :: exist
 
-    If (spectra .eq. 'El') then
-
-       inquire(file=EL_FILE,exist=exist)
-
-       If (exist) then
-          
-          open(UNIT_FILE10,file=EL_FILE)
-
-       End If
-
-    Else if (spectra .eq. 'Elnl') then
-
-       inquire(file=ELNL_FILE,exist=exist)
-
-       If (exist) then
-
-          open(UNIT_FILE10,file=ELNL_FILE)
-
-       End If
-
-    Else if (spectra .eq. 'Clfid') then
+    If (spectra .eq. 'Clfid') then
 
        inquire(file=CLFID_FILE,exist=exist)
 
        If (exist) then
           
           open(UNIT_FILE10,file=CLFID_FILE)
+
+       End If
+
+    Else if (spectra .eq. 'Clfidnl') then
+
+       inquire(file=CLFIDNL_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=CLFIDNL_FILE)
+
+       End If
+
+    Else if (spectra .eq. 'Clfidhalofit') then
+
+       inquire(file=CLFIDHALOFIT_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=CLFIDHALOFIT_FILE)
+
+       End If
+
+    Else if (spectra .eq. 'Clfidnlhalofit') then
+
+       inquire(file=CLFIDNLHALOFIT_FILE,exist=exist)
+
+       If (exist) then
+          
+          open(UNIT_FILE10,file=CLFIDNLHALOFIT_FILE)
 
        End If
        
@@ -718,6 +844,10 @@ contains
        Do p=1,nbins
 
           Do i=1,nbins
+
+             El(m,p,i) = abs(Cl_fid_halofit(m,p,i) - Cl_fid(m,p,i))
+
+             Elnl(m,p,i) = abs(Cl_fid_nl_halofit(m,p,i) - Cl_fid_nl(m,p,i)) 
 
              Cl_obs(m,p,i) = 2.d0*Pi*(Cl_fid(m,p,i) + El(m,p,i))/real(m)/(real(m)+1.d0) + Nl(p,i) 
 
@@ -1196,6 +1326,9 @@ contains
 
     compute_determinant = fgsl_linalg_LU_det(a,signum)
 
+    call fgsl_matrix_free(a)
+    call fgsl_permutation_free(q)
+
   end function compute_determinant
 
   subroutine write_cov_mat()
@@ -1291,6 +1424,106 @@ contains
 
   end subroutine read_cov_mat
 
+  subroutine read_prior_cov()
+    
+    use input
+    use fgsl
+
+    Implicit none
+
+    Integer*4 :: index1
+    Logical :: exist 
+
+    integer(fgsl_size_t), parameter :: n = number_of_prior_parameters 
+    type(fgsl_matrix) :: a
+    integer(fgsl_int) :: status
+    real(fgsl_double), target :: af(n, n)
+
+    type(fgsl_error_handler_t) :: std, off
+
+    inquire(file=PRIOR_COVMAT_FILE,exist=exist)
+
+    If (exist) then
+
+       open(UNIT_FILE11,file=PRIOR_COVMAT_FILE)
+
+       Do index1=1,number_of_prior_parameters
+
+          read(UNIT_FILE11,*) prior_cov(index1,1:number_of_prior_parameters)
+
+       End Do
+
+       close(UNIT_FILE11)
+
+       af = prior_cov
+
+       a = fgsl_matrix_init(type=1.0_fgsl_double)
+
+       status = fgsl_matrix_align(af, n, n, n, a)
+
+       std = fgsl_set_error_handler_off()
+
+       status = fgsl_linalg_cholesky_decomp1(a)
+
+       off = fgsl_set_error_handler(std)
+
+       call fgsl_matrix_free(a)
+
+       If (status .eq. fgsl_edom) then
+
+          write(UNIT_FILE1,*) 'PRIOR COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+          stop
+
+       Else
+
+          continue
+
+       End If
+
+    Else
+
+       write(UNIT_FILE1,*) 'NO PRIOR COVARIANCE MATRIX FOUND IN COVMAT FOLDER'
+
+       stop
+
+    End If
+
+  end subroutine read_prior_cov
+
+  subroutine compute_inv_prior_cov(matrix)
+
+    use input
+    use fgsl
+    
+    Implicit none
+    
+    real(fgsl_double),dimension(number_of_prior_parameters,number_of_prior_parameters) :: matrix,matrixb
+    integer(fgsl_size_t), parameter :: n = number_of_prior_parameters
+    integer(fgsl_int) :: status,signum
+    type(fgsl_matrix) :: a,b
+    real(fgsl_double), target :: af(n, n)
+    type(fgsl_permutation) :: q
+    
+    a = fgsl_matrix_init(type=1.0_fgsl_double)
+    b = fgsl_matrix_init(type=1.0_fgsl_double)
+    q = fgsl_permutation_alloc(n)
+
+    af = matrix
+
+    status = fgsl_matrix_align(af, n, n, n, a)
+    status = fgsl_linalg_LU_decomp(a, q, signum)
+    status = fgsl_linalg_LU_invert(a, q, b)
+    status = fgsl_matrix_to_array(matrixb,b)
+
+    inv_prior_cov = matrixb
+
+    call fgsl_matrix_free(a)
+    call fgsl_matrix_free(b)
+    call fgsl_permutation_free(q)
+
+  end subroutine compute_inv_prior_cov
+
   subroutine read_bestfit()
     
     use input
@@ -1358,17 +1591,21 @@ contains
 
     open(UNIT_FILE9,file=INI_FILE)
 
-    If (spectra .eq. 'El') then 
+    If (spectra .eq. 'Clfidnl') then 
 
-       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/El_'
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidnl_'
 
-       write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
+    Else if (spectra .eq. 'Clfidhalofit') then 
 
-    Else if (spectra .eq. 'Elnl') then 
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidhalofit_'
 
-       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Elnl_'
+       write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
-       write(UNIT_FILE9,'(a25)') 'number count error = 0.10'
+    Else if (spectra .eq. 'Clfidnlhalofit') then 
+
+       write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidnlhalofit_'
+
+       write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
     Else if (spectra .eq. 'Clfid') then
 
@@ -1394,7 +1631,7 @@ contains
 
     End if
 
-    If ( ( (spectra .eq. 'El') .or. (spectra .eq. 'Clfid') ) .or. (spectra .eq. 'Elnl') ) then
+    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidnl') ) .or. ( (spectra .eq. 'Clfidhalofit') .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
 
        Do index=1,number_of_parameters
 
@@ -1412,7 +1649,9 @@ contains
 
     End If
 
-    write(UNIT_FILE9,'(a11, es16.10)') 'tau_reio = ', tau
+    write(UNIT_FILE9,'(a12)') 'cs2_fld = 1.'
+
+    write(UNIT_FILE9,'(a12)') 'use_ppf = no'
 
     write(UNIT_FILE9,'(a7, f5.3)') 'N_ur = ', real(N_ur)
 
@@ -1426,9 +1665,9 @@ contains
 
     write(UNIT_FILE9,'(a12)') 'output = nCl'
 
-    write(UNIT_FILE9,'(a32)') 'dNdz_selection = analytic_euclid'
+    write(UNIT_FILE9,'(a25)') 'dNdz_selection = analytic'
 
-    write(UNIT_FILE9,'(a32)') 'dNdz_evolution = analytic_euclid'
+    write(UNIT_FILE9,'(a25)') 'dNdz_evolution = analytic'
 
     write(UNIT_FILE9,*) 'selection = '//trim(selection)//' '
 
@@ -1717,127 +1956,144 @@ contains
 
        det_mix = 0.d0
 
-       If (theoreticalerror .gt. 0.d0) then 
+!!$       If (theoreticalerror .gt. 0.d0) then 
+!!$
+!!$          Do  indexbin_k=1,nbins
+!!$
+!!$             Do indexbin_i=1,nbins
+!!$
+!!$                Do indexbin_j=1,nbins
+!!$
+!!$                   Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
+!!$
+!!$                End Do
+!!$
+!!$             End Do
+!!$
+!!$             Do indexbin_p=1,nbins
+!!$
+!!$                Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
+!!$
+!!$             End Do
+!!$
+!!$             det_mix = compute_determinant(Cov_mix) + det_mix
+!!$
+!!$          End Do
+!!$
+!!$          ! Here function to minimize chi2 w.r.t must be called  
+!!$
+!!$          epsilon_l = 0.d0 ! In the meantime we disregard epsilon_l (output of function above)
+!!$
+!!$          !If ( (epsilon_l-epsilon_min < 1.d-5/dble(L)) .or. (epsilon_max-epsilon_l<1.d-5/dble(L)) ) then 
+!!$          !    print *,'Minimization did not converge for ', indexl, 'having epsilon_l equal to ',epsilon_l
+!!$          !End If
+!!$
+!!$          Do indexbin_i=1,nbins
+!!$
+!!$             Do indexbin_j=1,nbins
+!!$
+!!$                Cov_the_El(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
+!!$                     + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
+!!$
+!!$             End Do
+!!$
+!!$          End Do
+!!$
+!!$          det_the_El = compute_determinant(Cov_the_El)
+!!$
+!!$          det_the_El_mix = 0.d0
+!!$
+!!$          Do  indexbin_k=1,nbins
+!!$
+!!$             Do indexbin_i=1,nbins
+!!$
+!!$                Do indexbin_j=1,nbins
+!!$
+!!$                   Cov_mix_new(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
+!!$                        + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
+!!$
+!!$                End Do
+!!$
+!!$             End Do
+!!$
+!!$             Do indexbin_p=1,nbins
+!!$
+!!$                Cov_mix_new(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
+!!$
+!!$             End Do
+!!$
+!!$             det_the_El_mix = compute_determinant(Cov_mix_new) + det_the_El_mix
+!!$
+!!$          End Do
+!!$
+!!$          chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the_El/det_obs) + det_the_El_mix/det_the_El &
+!!$               - dble(nbins)) + chi2 + epsilon_l**2
+!!$
+!!$       Else
 
-          Do  indexbin_k=1,nbins
-
-             Do indexbin_i=1,nbins
-
-                Do indexbin_j=1,nbins
-
-                   Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
-
-                End Do
-
-             End Do
-
-             Do indexbin_p=1,nbins
-
-                Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
-
-             End Do
-
-             det_mix = compute_determinant(Cov_mix) + det_mix
-
-          End Do
-
-          ! Here function to minimize chi2 w.r.t must be called  
-
-          epsilon_l = 0.d0 ! In the meantime we disregard epsilon_l (output of function above)
-
-          !If ( (epsilon_l-epsilon_min < 1.d-5/dble(L)) .or. (epsilon_max-epsilon_l<1.d-5/dble(L)) ) then 
-          !    print *,'Minimization did not converge for ', indexl, 'having epsilon_l equal to ',epsilon_l
-          !End If
+       Do  indexbin_k=1,nbins
 
           Do indexbin_i=1,nbins
 
              Do indexbin_j=1,nbins
 
-                Cov_the_El(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
-                     + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
+                Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
 
              End Do
 
           End Do
 
-          det_the_El = compute_determinant(Cov_the_El)
+          Do indexbin_p=1,nbins
 
-          det_the_El_mix = 0.d0
-
-          Do  indexbin_k=1,nbins
-
-             Do indexbin_i=1,nbins
-
-                Do indexbin_j=1,nbins
-
-                   Cov_mix_new(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)&
-                        + epsilon_l*Elth(indexl,indexbin_i,indexbin_j)
-
-                End Do
-
-             End Do
-
-             Do indexbin_p=1,nbins
-
-                Cov_mix_new(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
-
-             End Do
-
-             det_the_El_mix = compute_determinant(Cov_mix_new) + det_the_El_mix
+             Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
 
           End Do
 
-          chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the_El/det_obs) + det_the_El_mix/det_the_El &
-               - dble(nbins)) + chi2 + epsilon_l**2
+          det_mix = compute_determinant(Cov_mix) + det_mix
 
-       Else
+       End Do
 
-          Do  indexbin_k=1,nbins
+       chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the/det_obs) + det_mix/det_the - dble(nbins)) + chi2
 
-             Do indexbin_i=1,nbins
-
-                Do indexbin_j=1,nbins
-
-                   Cov_mix(indexbin_i,indexbin_j) = Clth(indexl,indexbin_i,indexbin_j)
-
-                End Do
-
-             End Do
-
-             Do indexbin_p=1,nbins
-
-                Cov_mix(indexbin_p,indexbin_k) = Cl_obs(indexl,indexbin_p,indexbin_k) 
-
-             End Do
-
-             det_mix = compute_determinant(Cov_mix) + det_mix
-
-          End Do
-
-          chi2 = fsky*(2.d0*dble(indexl)+1.d0)*(log(det_the/det_obs) + det_mix/det_the - dble(nbins)) + chi2
-
-       End if
+!!$       End if
 
     End Do
 
-    !    If (use_gaussian_planck_prior) then 
+    If (use_gaussian_planck_prior) then 
 
-    !       Do indexbin_i=1,5
+       Do indexbin_k=1,number_of_parameters
 
-    !          Do indexbin_j=1,5
+          Do indexbin_p=1,number_of_parameters
 
-    !             chi2 = (fiducial_vector(indexbin_i)-param_vector(indexbin_i))*inv_prior_cov(indexbin_i,&
-    !                  indexbin_j)*(fiducial_vector(indexbin_j) - param_vector(indexbin_j)) + chi2 
+             Do indexbin_i=1,number_of_prior_parameters
 
-    !          End Do
+                Do indexbin_j=1,number_of_prior_parameters
 
-    !       End Do
+                   If ( (parameters(indexbin_k)%name .eq. prior_parameters(indexbin_i)%name) .and. (parameters(indexbin_p)%name .eq. prior_parameters(indexbin_j)%name) ) then 
 
-    !    Else
+                   
+                      chi2 = (prior_parameters(indexbin_i)%mean-current_point(indexbin_k))*inv_prior_cov(indexbin_i,&
+                           indexbin_j)*(prior_parameters(indexbin_j)%mean - current_point(indexbin_p)) + chi2 
 
-    !       continue
+                   Else
 
-    !    End If
+                      continue
+
+                   End if
+
+                End Do
+
+             End Do
+
+          End Do
+
+       End Do
+
+    Else
+
+       continue
+
+    End If
 
     If (abs(chi2).ge.0.d0) then
 
