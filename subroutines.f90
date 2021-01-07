@@ -1504,7 +1504,7 @@ contains
     integer(fgsl_int) :: status,signum
     type(fgsl_matrix) :: a,b
     real(fgsl_double), target :: af(n, n)
-    real(fgsl_double), pointer :: matrixb(n,n)
+    real(fgsl_double), pointer :: matrixb(:,:)
     type(fgsl_permutation) :: q
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
