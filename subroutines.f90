@@ -640,7 +640,8 @@ contains
 
     Character(len=*) :: spectra
 
-    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidhalofit') ) .or. ( (spectra .eq. 'Clfidnl') .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
+    If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidhalofit') ) .or. ( (spectra .eq. 'Clfidnl')&
+         .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
        
        call system(''//trim(CLASS_EXECUTABLE)//'/./class '//trim(INI_FILE)//' '//trim(HIGH_PRE)//'')
 
