@@ -1499,11 +1499,12 @@ contains
     
     Implicit none
     
-    real(fgsl_double),dimension(number_of_prior_parameters,number_of_prior_parameters) :: matrix,matrixb
+    real(fgsl_double),dimension(number_of_prior_parameters,number_of_prior_parameters) :: matrix!,matrixb
     integer(fgsl_size_t), parameter :: n = number_of_prior_parameters
     integer(fgsl_int) :: status,signum
     type(fgsl_matrix) :: a,b
     real(fgsl_double), target :: af(n, n)
+    real(fgsl_double), pointer :: matrixb(n,n)
     type(fgsl_permutation) :: q
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
@@ -1515,8 +1516,8 @@ contains
     status = fgsl_matrix_align(af, n, n, n, a)
     status = fgsl_linalg_LU_decomp(a, q, signum)
     status = fgsl_linalg_LU_invert(a, q, b)
-    status = fgsl_matrix_to_array(matrixb,b)
-
+    !status = fgsl_matrix_to_array(matrixb,b)
+    status = fgsl_matrix_align(matrixb,b)
     inv_prior_cov = matrixb
 
     call fgsl_matrix_free(a)
