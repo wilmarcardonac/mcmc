@@ -1149,11 +1149,11 @@ contains
     real(fgsl_double) :: minlnlkl
     real(fgsl_double),dimension(number_of_parameters,number_of_parameters) :: matrix
     integer(fgsl_size_t), parameter :: n = number_of_parameters
-    integer(fgsl_int) :: status,signum
+    integer(fgsl_int) :: status!,signum
     type(fgsl_matrix) :: a
     real(fgsl_double), target :: af(n, n)
     type(fgsl_permutation) :: q
-    real(fgsl_double) :: det_matrix
+    !real(fgsl_double) :: det_matrix
     type(fgsl_error_handler_t) :: std, off
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
@@ -1499,29 +1499,46 @@ contains
     
     Implicit none
     
-    real(fgsl_double),dimension(number_of_prior_parameters,number_of_prior_parameters) :: matrix!,matrixb
+    real(fgsl_double),dimension(number_of_prior_parameters,number_of_prior_parameters) :: matrix
     integer(fgsl_size_t), parameter :: n = number_of_prior_parameters
     integer(fgsl_int) :: status,signum
-    type(fgsl_matrix) :: a,b
+    type(fgsl_matrix) :: a
     real(fgsl_double), target :: af(n, n)
     real(fgsl_double), pointer :: matrixb(:,:)
     type(fgsl_permutation) :: q
+    type(fgsl_error_handler_t) :: std,off
     
     a = fgsl_matrix_init(type=1.0_fgsl_double)
-    b = fgsl_matrix_init(type=1.0_fgsl_double)
     q = fgsl_permutation_alloc(n)
 
     af = matrix
 
     status = fgsl_matrix_align(af, n, n, n, a)
-    status = fgsl_linalg_LU_decomp(a, q, signum)
-    status = fgsl_linalg_LU_invert(a, q, b)
-    !status = fgsl_matrix_to_array(matrixb,b)
-    status = fgsl_matrix_align(matrixb,b)
+
+    std = fgsl_set_error_handler_off()
+
+    status = fgsl_linalg_cholesky_decomp1(a)
+
+    off = fgsl_set_error_handler(std)
+
+    If (status .eq. fgsl_edom) then
+
+       write(UNIT_FILE1,*) 'PRIOR COVARIANCE MATRIX IS NOT POSITIVE-DEFINITE'
+
+    Else
+
+       write(UNIT_FILE1,*) 'PRIOR COVARIANCE MATRIX IS POSITIVE-DEFINITE'
+
+    End If
+
+    status = fgsl_linalg_cholesky_invert(a)
+
+    status = fgsl_matrix_align(matrixb,a)
+
     inv_prior_cov = matrixb
 
     call fgsl_matrix_free(a)
-    call fgsl_matrix_free(b)
+
     call fgsl_permutation_free(q)
 
   end subroutine compute_inv_prior_cov
@@ -1898,8 +1915,8 @@ contains
     Real*8,parameter :: epsilon_min = 0.d0
     Real*8,parameter :: epsilon_max = 1.d2
     Real*8,dimension(lmin:lmax,0:nbins,0:nbins) :: Clth,Cl,Elth
-    Real*8,dimension(1:nbins,1:nbins) :: Cov_mix,Cov_obs,Cov_the,Cov_the_El,Cov_mix_new
-    Real*8 :: euclid_galaxy_cl_likelihood,chi2,det_obs,det_the,det_mix,det_the_El,det_the_El_mix,epsilon_l
+    Real*8,dimension(1:nbins,1:nbins) :: Cov_mix,Cov_obs,Cov_the!,Cov_the_El!,Cov_mix_new
+    Real*8 :: euclid_galaxy_cl_likelihood,chi2,det_obs,det_the,det_mix!,det_the_El!,det_the_El_mix!,epsilon_l
     !    Real*8 :: nss,ass,h00,ob,ocdm
     !    Real*8,dimension(5) :: param_vector
     !    Real*8,parameter,dimension(5) :: fiducial_vector = [omega_b,omega_cdm,n_s,dlog(1.d10*A_s),H0]

@@ -54,16 +54,6 @@ Program mcmc
        prior_cov(number_of_prior_parameters,number_of_prior_parameters),&
        inv_prior_cov(number_of_prior_parameters,number_of_prior_parameters))
 
-  print *, 'COV PRIOR'
-
-  print *, prior_cov
-
-  print *, 'INV COV PRIOR'
-
-  print *, inv_prior_cov
-
-  stop
-  
   call load_data()   ! LOAD DATA
 
   If (starting_point .eq. 'last_point') then
