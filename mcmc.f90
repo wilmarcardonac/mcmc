@@ -56,6 +56,16 @@ Program mcmc
   
   call load_data()   ! LOAD DATA
 
+  print *, 'COV PRIOR'
+
+  print *, prior_cov
+
+  print *, 'INV COV PRIOR'
+
+  print *, inv_prior_cov
+
+  stop
+
   If (starting_point .eq. 'last_point') then
 
      open(UNIT_FILE4,file=CHAIN_FILE,status="old",position="append",action="write") 
