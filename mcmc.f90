@@ -53,8 +53,6 @@ Program mcmc
        Cl_fid_nl_halofit(lmin:lmax,0:nbins,0:nbins),&
        prior_cov(number_of_prior_parameters,number_of_prior_parameters),&
        inv_prior_cov(number_of_prior_parameters,number_of_prior_parameters))
-  
-  call load_data()   ! LOAD DATA
 
   print *, 'COV PRIOR'
 
@@ -65,6 +63,8 @@ Program mcmc
   print *, inv_prior_cov
 
   stop
+  
+  call load_data()   ! LOAD DATA
 
   If (starting_point .eq. 'last_point') then
 
