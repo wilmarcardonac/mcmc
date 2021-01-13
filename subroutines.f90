@@ -1745,6 +1745,8 @@ contains
 
     write(UNIT_FILE9,'(a17)') 'gauge = newtonian'
 
+    write(UNIT_FILE9,'(a9)') 'YHe = BBN'
+
     close(UNIT_FILE9)
 
   end subroutine write_ini_file
