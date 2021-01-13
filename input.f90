@@ -134,7 +134,7 @@ Module input
   Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
   
   Character(len=*),parameter :: CLASS_EXECUTABLE = './class_EFCLASS'
-  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss.pre'
+  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss_ref.pre'
   Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
   Character(len=*),parameter :: LOW_PRE_T5 = './class_EFCLASS/cl_lss_low_t5.pre'
   Character(len=*),parameter :: LOW_PRE_G10 = './class_EFCLASS/cl_lss_low_g10.pre'
