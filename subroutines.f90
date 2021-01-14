@@ -1753,7 +1753,7 @@ contains
 
     write(UNIT_FILE9,'(a17)') 'gauge = newtonian'
 
-    write(UNIT_FILE9,'(a9)') 'YHe = BBN'
+    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
 
     close(UNIT_FILE9)
 

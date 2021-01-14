@@ -132,7 +132,8 @@ Module input
   Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit_cl')//'.dat'
   Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit_cl')//'.dat'
   Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
-  
+  Character(len=*),parameter :: sBBN_FILE = ROOT_PATH//trim('/')//'class_EFCLASS/bbn/sBBN.dat'  
+
   Character(len=*),parameter :: CLASS_EXECUTABLE = './class_EFCLASS'
   Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss_ref.pre'
   Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
