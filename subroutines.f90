@@ -1614,11 +1614,15 @@ contains
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidnl_'
 
+       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+
     Else if (spectra .eq. 'Clfidhalofit') then 
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidhalofit_'
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
+
+       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
 
     Else if (spectra .eq. 'Clfidnlhalofit') then 
 
@@ -1626,29 +1630,33 @@ contains
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
+       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+
     Else if (spectra .eq. 'Clfid') then
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfid_'
+
+       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
        
     Else if (spectra .eq. 'Cl') then
 
        write(UNIT_FILE9,*) 'root = '//trim(OUTPUT)//'/Cl_'
+
+       If (lensing) then
+
+          write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+
+       Else
+
+          write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+
+       End if
 
     Else
 
        write(UNIT_FILE1,*) 'UNRECOGNISED OPTION IN subroutine write_ini_file'
        
     End If
-
-    If (lensing) then
-
-       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
-
-    Else
-
-       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
-
-    End if
 
     If ( ( (spectra .eq. 'Clfid') .or. (spectra .eq. 'Clfidnl') ) .or. ( (spectra .eq. 'Clfidhalofit')&
          .or. (spectra .eq. 'Clfidnlhalofit') ) ) then
