@@ -22,13 +22,20 @@ Module input
      Character(len=20) :: latexname
   end type parameters_mcmc
 
+  !DEFINING PRIOR PARAMETERS DATA TYPE:
+  type prior_parameters_mcmc 
+     Character(len=20) :: name
+     Real*8 :: mean
+  end type prior_parameters_mcmc
+
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
-  Integer*4,parameter :: number_iterations = 20000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
-  Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER VARYING PARAMETERS     
+  Integer*4,parameter :: number_iterations = 550000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
+  Integer*4,parameter :: number_of_parameters = 11   ! TOTAL NUMBER OF VARYING PARAMETERS
+  Integer*4,parameter :: number_of_prior_parameters = 8 ! NUMBER OF PARAMETERS WITH PRIOR     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
   Integer*4,parameter :: UNIT_FILE2 = 81  ! UNIT NUMBER GETDIST FILES
   Integer*4,parameter :: UNIT_FILE3 = 82  ! UNIT NUMBER GETDIST FILES
@@ -39,38 +46,41 @@ Module input
   Integer*4,parameter :: UNIT_FILE8 = 87  ! UNIT NUMBER BESTFIT FILE
   Integer*4,parameter :: UNIT_FILE9 = 88  ! UNIT NUMBER INI FILE
   Integer*4,parameter :: UNIT_FILE10 = 89  ! UNIT NUMBER SPECTRA
+  Integer*4,parameter :: UNIT_FILE11 = 90  ! UNIT NUMBER PRIOR COVMAT FILE
   Integer*4 :: number_accepted_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: number_rejected_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: weight = 1 ! COUNTS NUMBER OF TAKEN STEPS BEFORE MOVING TO A NEW POINT
-  Integer*4,parameter    :: jumping_factor_update = 250    ! STEPS TAKEN BEFORE UPDATING JUMPING FACTOR (IF NEEDED)
-  Integer*4,parameter    :: steps_taken_before_definite_run = 10000 !5000!10000!0 ! STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
+  Integer*4,parameter    :: jumping_factor_update = 20    ! STEPS TAKEN BEFORE UPDATING JUMPING FACTOR (IF NEEDED)
+  Integer*4,parameter    :: steps_taken_before_definite_run = 50000 !10000 !5000!10000!0 ! STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
   Integer*4,parameter    :: covariance_matrix_update = 2000 !5000!10000!0 ! STEPS TAKEN BEFORE UPDATING COVARIANCE MATRIX (IF NEEDED)
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 1.d-2      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
-  Real*8, allocatable, dimension(:,:) :: Nl ! SHOT NOISE
-  Real*8, allocatable, dimension(:,:,:) :: El, Elnl, Cl_fid, Cl_obs, Cl_current
+  Real*8, allocatable, dimension(:,:) :: Nl, prior_cov, inv_prior_cov ! SHOT NOISE, PRIOR COVARIANCE MATRIX AND ITS INVERSE
+  Real*8, allocatable, dimension(:,:,:) :: El, Elnl, Cl_fid, Cl_obs, Cl_current, Cl_fid_nl, Cl_fid_halofit, Cl_fid_nl_halofit
   Real*8 :: jumping_factor = 2.38d0/sqrt(dble(number_of_parameters)) ! INCREASE/DECREASE TO MATCH INITIAL ACCEPTANCE PROBABILITY
   Real*8 :: old_loglikelihood,current_loglikelihood      ! STORE LIKELIHOOD VALUES
   Real*4,dimension(number_iterations) :: acceptance_probability
-  Real*4,parameter :: lower_limit_ap = 0.1! LOWER LIMIT ACCEPTANCE PROBABILITY
-  Real*4,parameter :: upper_limit_ap = 0.4! UPPER LIMIT ACCEPTANCE PROBABILITY
+  Real*4,parameter :: lower_limit_ap = 0.2!0.1! LOWER LIMIT ACCEPTANCE PROBABILITY
+  Real*4,parameter :: upper_limit_ap = 0.3!0.4! UPPER LIMIT ACCEPTANCE PROBABILITY
   Real*4 :: average_ap ! AVERAGE ACCEPTANCE PROBABILITY
 
   Logical :: bad_ap!,good_acceptance_probability ! CONTROL PLAUSIBLE VALUES OF COSMOLOGICAL PARAMETERS
   Logical,parameter :: lensing = .true.
   Logical :: cl_current_found
+  Logical,parameter :: use_gaussian_planck_prior = .true.
 
   type(parameters_mcmc), dimension(number_of_parameters) :: parameters 
+  type(prior_parameters_mcmc), dimension(number_of_prior_parameters) :: prior_parameters
 
   ! FIXED PARAMETERS IN CODE CLASS 
   Real*8,parameter :: N_ur = 2.0328d0
   Real*8,parameter :: N_ncdm = 1.d0
   Real*8,parameter :: deg_ncdm = 1.d0
-  Real*8,parameter :: tau = 5.96d-2
+  !Real*8,parameter :: tau = 5.96d-2
   !Real*8,parameter :: sigma_tau = 8.9d-3
 
   Integer*4,parameter :: nbins = 10
@@ -97,7 +107,7 @@ Module input
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/home/projects/dea/mcmc'
+  Character(len=*),parameter :: ROOT_PATH = '/home/wcardona/projects/deaMI/t10l/mcmc'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
@@ -112,15 +122,20 @@ Module input
   Character(len=*),parameter :: COVMAT_FILE_AUX = OUTPUT//trim('/')//'covmat.txt'
   Character(len=*),parameter :: BESTFIT_FILE_AUX = OUTPUT//trim('/')//'bestfit.txt'
   Character(len=*),parameter :: COVMAT_FILE = COVMAT//trim('/covmat')//'.txt'
+  Character(len=*),parameter :: PRIOR_COVMAT_FILE = COVMAT//trim('/prior_covmat')//'.txt'
   Character(len=*),parameter :: BESTFIT_FILE = BESTFIT//trim('/bestfit')//'.txt'
   Character(len=*),parameter :: INI_FILE = OUTPUT//trim('/')//'file.ini'
   Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
   Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl_cl')//'.dat'
   Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNL_FILE = DATA//trim('/Clfidnl_cl')//'.dat'
+  Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit_cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit_cl')//'.dat'
   Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
-  
+  Character(len=*),parameter :: sBBN_FILE = ROOT_PATH//trim('/')//'class_EFCLASS/bbn/sBBN.dat'  
+
   Character(len=*),parameter :: CLASS_EXECUTABLE = './class_EFCLASS'
-  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss.pre'
+  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss_ref.pre'
   Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
   Character(len=*),parameter :: LOW_PRE_T5 = './class_EFCLASS/cl_lss_low_t5.pre'
   Character(len=*),parameter :: LOW_PRE_G10 = './class_EFCLASS/cl_lss_low_g10.pre'

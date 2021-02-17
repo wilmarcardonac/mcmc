@@ -48,8 +48,12 @@ Program mcmc
 
   allocate (El(lmin:lmax,0:nbins,0:nbins),Cl_fid(lmin:lmax,0:nbins,0:nbins),&
        Cl_obs(lmin:lmax,0:nbins,0:nbins), Cl_current(lmin:lmax,0:nbins,0:nbins),&
-       Nl(1:nbins,1:nbins),Elnl(lmin:lmax,0:nbins,0:nbins))
-  
+       Nl(1:nbins,1:nbins),Elnl(lmin:lmax,0:nbins,0:nbins),&
+       Cl_fid_nl(lmin:lmax,0:nbins,0:nbins),Cl_fid_halofit(lmin:lmax,0:nbins,0:nbins),&
+       Cl_fid_nl_halofit(lmin:lmax,0:nbins,0:nbins),&
+       prior_cov(number_of_prior_parameters,number_of_prior_parameters),&
+       inv_prior_cov(number_of_prior_parameters,number_of_prior_parameters))
+
   call load_data()   ! LOAD DATA
 
   If (starting_point .eq. 'last_point') then
@@ -84,6 +88,10 @@ Program mcmc
      
   End Do
 
+  call write_cov_mat()
+
+  call write_bestfit()
+
   average_ap = sum(acceptance_probability(steps_taken_before_definite_run+1:number_iterations))&
 	  /real(number_iterations-steps_taken_before_definite_run)
 
@@ -95,7 +103,7 @@ Program mcmc
   
   call fgsl_rng_free(r)
 
-  deallocate(Nl,El,Elnl,Cl_fid,Cl_obs,Cl_current) 
+  deallocate(Nl,El,Elnl,Cl_fid,Cl_obs,Cl_current,Cl_fid_nl,Cl_fid_halofit,Cl_fid_nl_halofit,prior_cov,inv_prior_cov) 
   
   close(UNIT_FILE1)
 
