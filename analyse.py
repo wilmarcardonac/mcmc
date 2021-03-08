@@ -28,7 +28,7 @@ print '1D STATISTICS FILE CREATED'
 
 f = plots.getSubplotPlotter()
 
-f.settings.rcSizes(axes_fontsize = 6,lab_fontsize = 8)
+f.settings.rc_sizes(axes_fontsize = 6,lab_fontsize = 8)
 
 f.settings.legend_fontsize = 8
 
