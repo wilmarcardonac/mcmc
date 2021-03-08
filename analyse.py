@@ -6,11 +6,11 @@ samples = loadMCSamples('/home/projects/coupled-dm-de/mcmc/chains/mcmc_final_out
 
 g = plots.getSinglePlotter()
 
-g.settings.rcSizes(axes_fontsize = 6,lab_fontsize = 8)
+g.settings.rc_sizes(axes_fontsize = 6,lab_fontsize = 8)
 
 g.settings.x_label_rotation = -45
 
-g.settings.auto_ticks = True
+#g.settings.auto_ticks = True
 
 g.settings.legend_fontsize = 11
 
