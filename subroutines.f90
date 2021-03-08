@@ -96,22 +96,118 @@ contains
     write(UNIT_FILE1,*) 'MCMC STARTS...'
     
     If (likelihood .eq. 'gaussian') then
+       
+       If (use_gaussian_planck_prior) then 
 
-       write(UNIT_FILE1,*) 'WORKING WITH A GAUSSIAN LIKELIHOOD (TESTING THE CODE)'
+          write(UNIT_FILE1,*) 'WORKING WITH PRIOR GAUSSIAN LIKELIHOOD'
 
-       Do index=1,number_of_parameters
-          
-          write(string,'(i2.2)') index
-          
-          parameters(index)%name = 'p'//trim(string)//''
-          parameters(index)%mean = 0.d0
-          parameters(index)%lower_limit = -1.d1
-          parameters(index)%upper_limit = 1.d1
-          parameters(index)%sigma = 5.d-1
-          parameters(index)%scale = 1.d0
-          parameters(index)%latexname = 'p_{'//trim(string)//'}'
+          parameters(1)%name = 'omega_b'
+          parameters(1)%mean = 2.247d-2
+          parameters(1)%lower_limit = 1.d-4
+          parameters(1)%upper_limit = 4.d-2
+          parameters(1)%sigma = 1.3d-4
+          parameters(1)%scale = 1.d0
+          parameters(1)%latexname = '\omega_b'
 
-       End Do
+          parameters(2)%name = 'omega_cdm'
+          parameters(2)%mean = 1.193d-1
+          parameters(2)%lower_limit = 1.d-4
+          parameters(2)%upper_limit = 1.d0
+          parameters(2)%sigma = 7.7d-4
+          parameters(2)%scale = 1.d0
+          parameters(2)%latexname = '\omega_{cdm}'
+
+          parameters(3)%name = 'n_s'
+          parameters(3)%mean = 9.679d-1
+          parameters(3)%lower_limit = 9.d-2
+          parameters(3)%upper_limit = 2.d0
+          parameters(3)%sigma = 3.0d-3
+          parameters(3)%scale = 1.d0
+          parameters(3)%latexname = 'n_s'
+
+          parameters(4)%name = 'ln10^{10}A_s'
+          parameters(4)%mean = 3.044d0 !2.12424d-9
+          parameters(4)%lower_limit = 2.0d0 !1.d-11
+          parameters(4)%upper_limit = 4.0d0
+          parameters(4)%sigma = 1.4d-2 !3.82d-11
+          parameters(4)%scale = 1.d0
+          parameters(4)%latexname = '\ln 10^{10} A_s'
+
+          parameters(5)%name = 'H0'
+          parameters(5)%mean = 6.738d1
+          parameters(5)%lower_limit = 3.d1
+          parameters(5)%upper_limit = 9.d1
+          parameters(5)%sigma = 5.3d-1
+          parameters(5)%scale = 1.d0
+          parameters(5)%latexname = 'H_0'
+
+          parameters(6)%name = 'w0_fld'
+          parameters(6)%mean = -9.8d-1
+          parameters(6)%lower_limit = -2.d0
+          parameters(6)%upper_limit = -3.d-1
+          parameters(6)%sigma = 1.6d-2
+          parameters(6)%scale = 1.d0
+          parameters(6)%latexname = 'w'
+
+          parameters(7)%name = 'tau_reio'
+          parameters(7)%mean = 5.43d-2
+          parameters(7)%lower_limit = 1.d-2
+          parameters(7)%upper_limit = 8.d-1
+          parameters(7)%sigma = 6.17d-3
+          parameters(7)%scale = 1.d0
+          parameters(7)%latexname = '\tau_{reio}'
+
+          parameters(8)%name = 'alpha_model'
+          parameters(8)%mean = 7.23d-2
+          parameters(8)%lower_limit = 0.d0
+          parameters(8)%upper_limit = 1.d2
+          parameters(8)%sigma = 1.07d-2
+          parameters(8)%scale = 1.d0
+          parameters(8)%latexname = '\alpha_{model}'
+
+          prior_parameters(1)%name = 'omega_b'
+          prior_parameters(1)%mean = 2.247d-2
+
+          prior_parameters(2)%name = 'omega_cdm'
+          prior_parameters(2)%mean = 1.193d-1
+
+          prior_parameters(3)%name = 'n_s'
+          prior_parameters(3)%mean = 9.679d-1
+
+          prior_parameters(4)%name = 'ln10^{10}A_s'
+          prior_parameters(4)%mean = 3.044d0 !2.12424d-9
+
+          prior_parameters(5)%name = 'H0'
+          prior_parameters(5)%mean = 6.738d1
+
+          prior_parameters(6)%name = 'w0_fld'
+          prior_parameters(6)%mean = -9.8d-1
+
+          prior_parameters(7)%name = 'tau_reio'
+          prior_parameters(7)%mean = 5.43d-2
+
+          prior_parameters(8)%name = 'alpha_model'
+          prior_parameters(8)%mean = 7.23d-2
+
+       Else
+
+          write(UNIT_FILE1,*) 'WORKING WITH A GAUSSIAN LIKELIHOOD (TESTING THE CODE)'
+
+          Do index=1,number_of_parameters
+
+             write(string,'(i2.2)') index
+
+             parameters(index)%name = 'p'//trim(string)//''
+             parameters(index)%mean = 0.d0
+             parameters(index)%lower_limit = -1.d1
+             parameters(index)%upper_limit = 1.d1
+             parameters(index)%sigma = 5.d-1
+             parameters(index)%scale = 1.d0
+             parameters(index)%latexname = 'p_{'//trim(string)//'}'
+
+          End Do
+
+       End if
        
     Else if (likelihood .eq. 'euclid') then
 
@@ -460,7 +556,17 @@ contains
 
     If (likelihood .eq. 'gaussian') then
 
-       continue
+       If (use_gaussian_planck_prior) then
+
+          call read_prior_cov()
+
+          call compute_inv_prior_cov(prior_cov)
+
+       Else
+
+          continue
+
+       End if
 
     Else if (likelihood .eq. 'euclid') then
 
@@ -629,7 +735,7 @@ contains
        End if
        
     End If
-
+    
   end subroutine load_data
 
   subroutine compute_spectra(spectra)
@@ -1898,19 +2004,64 @@ contains
 
     Implicit none
 
-    Integer*4 :: index
+    Integer*4 :: index,indexbin_i,indexbin_j,indexbin_k,indexbin_p
     Real*8 :: log_Gaussian_likelihood
     Real*8,dimension(number_of_parameters) :: array
 
     log_Gaussian_likelihood = 0.d0
 
-    Do index=1,number_of_parameters
+    If (use_gaussian_planck_prior) then 
 
-       log_Gaussian_likelihood = array(index)**2 + log_Gaussian_likelihood
+       Do indexbin_k=1,number_of_parameters
 
-    End Do
+          Do indexbin_p=1,number_of_parameters
 
-    log_Gaussian_likelihood = -log_Gaussian_likelihood/2.d0
+             Do indexbin_i=1,number_of_prior_parameters
+
+                Do indexbin_j=1,number_of_prior_parameters
+
+                   If ( (parameters(indexbin_k)%name .eq. prior_parameters(indexbin_i)%name) .and. &
+                        (parameters(indexbin_p)%name .eq. prior_parameters(indexbin_j)%name) ) then 
+
+                   
+                      log_Gaussian_likelihood = (prior_parameters(indexbin_i)%mean-&
+                           current_point(indexbin_k))*inv_prior_cov(indexbin_i,&
+                           indexbin_j)*(prior_parameters(indexbin_j)%mean - &
+                           current_point(indexbin_p)) + log_Gaussian_likelihood 
+
+                   Else
+
+                      continue
+
+                   End if
+
+                End Do
+
+             End Do
+
+          End Do
+
+       End Do
+
+    Else
+
+       Do index=1,number_of_parameters
+
+          log_Gaussian_likelihood = array(index)**2 + log_Gaussian_likelihood
+
+       End Do
+
+    End If
+
+    If (abs(log_Gaussian_likelihood).ge.0.d0) then
+
+       log_Gaussian_likelihood = -log_Gaussian_likelihood/2.d0
+
+    Else
+
+       log_Gaussian_likelihood = -1.d10
+
+    End If
 
   end function log_Gaussian_likelihood
 
