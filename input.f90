@@ -103,11 +103,11 @@ Module input
   Real*8,parameter :: s_2 = -0.0671d0
   Real*8,parameter :: s_3 = 0.1031d0
   
-  Character(len=*),parameter :: selection = 'tophat' ! OPTIONS: 'tophat', 'gaussian'
+  Character(len=*),parameter :: selection = 'gaussian' ! OPTIONS: 'tophat', 'gaussian'
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/home/wcardona/projects/deaMI/t5l/mcmc'
+  Character(len=*),parameter :: ROOT_PATH = '/home/wcardona/projects/deaMI/g5l/mcmc'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
