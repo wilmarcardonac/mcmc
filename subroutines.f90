@@ -305,7 +305,7 @@ contains
 
        parameters(8)%name = 'w0_fld'
        parameters(8)%mean = -9.8d-1
-       parameters(8)%lower_limit = -2.d0
+       parameters(8)%lower_limit = -1.d0
        parameters(8)%upper_limit = -3.d-1
        parameters(8)%sigma = 1.6d-2
        parameters(8)%scale = 1.d0
