@@ -8,7 +8,7 @@ import os,fnmatch
 
 #number_of_parameters = 10
 
-samples = loadMCSamples('/home/wcardona/projects/deaMI/t10l/mcmc/chains/mcmc_final_output',settings={'ignore_rows':.0})
+samples = loadMCSamples('/home/projects/deaMI/mcmc/chains/mcmc_final_output',settings={'ignore_rows':.0})
 
 g = plots.getSinglePlotter()
 
@@ -28,7 +28,7 @@ means = samples.setMeans()
 
 stats = samples.getMargeStats()
 
-stats.saveAsText('/home/wcardona/projects/deaMI/t10l/mcmc/output/1Dstatistics.txt')
+stats.saveAsText('/home/projects/deaMI/mcmc/output/1Dstatistics.txt')
 
 print '1D STATISTICS FILE CREATED'
 
@@ -40,7 +40,7 @@ f.settings.legend_fontsize = 8
 
 f.plots_1d(samples)
 
-f.export('/home/wcardona/projects/deaMI/t10l/mcmc/figures/1D_plots.pdf')
+f.export('/home/projects/deaMI/mcmc/figures/1D_plots.pdf')
 
 print '1D PLOTS CREATED'
 
@@ -109,7 +109,7 @@ for ax in g.subplots[9,0:9]:
 for ax in g.subplots[10,0:10]:
     ax.axhline(9.6e-3,color='black',ls='dotted')
 
-g.export('/home/wcardona/projects/deaMI/t10l/mcmc/figures/triangle_figure.pdf')
+g.export('/home/projects/deaMI/mcmc/figures/triangle_figure.pdf')
 
 print 'TRIANGLE PLOT CREATED'
 
