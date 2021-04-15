@@ -31,9 +31,9 @@ Module input
   ! MCMC PARAMETERS 
   Character(len=*),parameter :: likelihood = 'euclid' ! OPTIONS: 'gaussian','euclid'
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
-  Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
+  Character(len=*),parameter :: starting_cov_mat = 'diagonal' !'diagonal' ! OPTIONS: 'diagonal','given'
   
-  Integer*4,parameter :: number_iterations = 110000 !550000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
+  Integer*4,parameter :: number_iterations = 20000 !550000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 10   ! TOTAL NUMBER OF VARYING PARAMETERS
   Integer*4,parameter :: number_of_prior_parameters = 8 ! NUMBER OF PARAMETERS WITH PRIOR     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
@@ -56,7 +56,7 @@ Module input
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 1.d-2      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl, prior_cov, inv_prior_cov ! SHOT NOISE, PRIOR COVARIANCE MATRIX AND ITS INVERSE
