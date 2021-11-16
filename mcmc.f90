@@ -48,8 +48,12 @@ Program mcmc
 
   allocate (El(lmin:lmax,0:nbins,0:nbins),Cl_fid(lmin:lmax,0:nbins,0:nbins),&
        Cl_obs(lmin:lmax,0:nbins,0:nbins), Cl_current(lmin:lmax,0:nbins,0:nbins),&
-       Nl(1:nbins,1:nbins),Elnl(lmin:lmax,0:nbins,0:nbins))
-  
+       Nl(1:nbins,1:nbins),Elnl(lmin:lmax,0:nbins,0:nbins),&
+       Cl_fid_nl(lmin:lmax,0:nbins,0:nbins),Cl_fid_halofit(lmin:lmax,0:nbins,0:nbins),&
+       Cl_fid_nl_halofit(lmin:lmax,0:nbins,0:nbins),&
+       prior_cov(number_of_prior_parameters,number_of_prior_parameters),&
+       inv_prior_cov(number_of_prior_parameters,number_of_prior_parameters))
+
   call load_data()   ! LOAD DATA
 
   If (starting_point .eq. 'last_point') then
@@ -69,7 +73,7 @@ Program mcmc
   write(UNIT_FILE1,*) '# WEIGHT   -ln(L/L_{max})    ', parameters(1:number_of_parameters)%name
 
   write(UNIT_FILE1,*) 'ln(L/L_{max}) AT STARTING POINT = ', old_loglikelihood
-
+  
   Do index=1,number_iterations
      
      call generate_new_point_in_parameter_space()   ! GENERATE NEW POINT IN PARAMETER SPACE AND DECIDE ABOUT PLAUSIBILITY
@@ -99,7 +103,7 @@ Program mcmc
   
   call fgsl_rng_free(r)
 
-  deallocate(Nl,El,Elnl,Cl_fid,Cl_obs,Cl_current) 
+  deallocate(Nl,El,Elnl,Cl_fid,Cl_obs,Cl_current,Cl_fid_nl,Cl_fid_halofit,Cl_fid_nl_halofit,prior_cov,inv_prior_cov) 
   
   close(UNIT_FILE1)
 
