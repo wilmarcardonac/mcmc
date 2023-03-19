@@ -1718,7 +1718,7 @@ contains
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidnl_'
 
-       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+       write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
     Else if (spectra .eq. 'Clfidhalofit') then 
 
@@ -1726,7 +1726,7 @@ contains
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
-       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+       write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
 
     Else if (spectra .eq. 'Clfidnlhalofit') then 
 
@@ -1734,13 +1734,13 @@ contains
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
-       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+       write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
     Else if (spectra .eq. 'Clfid') then
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfid_'
 
-       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+       write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
        
     Else if (spectra .eq. 'Cl') then
 
@@ -1748,11 +1748,11 @@ contains
 
        If (lensing) then
 
-          write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+          write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
 
        Else
 
-          write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+          write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
        End if
 
