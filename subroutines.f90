@@ -1857,7 +1857,9 @@ contains
 
     write(UNIT_FILE9,'(a17)') 'gauge = newtonian'
 
-    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
+    write(UNIT_FILE9,'(a34,f5.3)') 'perturbations_sampling_stepsize = ', real(0.05) 
+
+!    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
 
     close(UNIT_FILE9)
 
