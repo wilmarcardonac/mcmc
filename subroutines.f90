@@ -1859,6 +1859,8 @@ contains
 
     write(UNIT_FILE9,'(a34,f5.3)') 'perturbations_sampling_stepsize = ', real(0.05) 
 
+    write(UNIT_FILE9,'(a20)') 'overwrite_root = yes'
+    
 !    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
 
     close(UNIT_FILE9)
