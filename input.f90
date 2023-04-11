@@ -19,7 +19,7 @@ Module input
      Real*8 :: upper_limit
      Real*8 :: sigma
      Real*8 :: scale
-     Character(len=20) :: latexname
+     Character(len=24) :: latexname
   end type parameters_mcmc
 
   !DEFINING PRIOR PARAMETERS DATA TYPE:
@@ -125,13 +125,13 @@ Module input
   Character(len=*),parameter :: PRIOR_COVMAT_FILE = COVMAT//trim('/prior_covmat')//'.txt'
   Character(len=*),parameter :: BESTFIT_FILE = BESTFIT//trim('/bestfit')//'.txt'
   Character(len=*),parameter :: INI_FILE = OUTPUT//trim('/')//'file.ini'
-  Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
-  Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl_cl')//'.dat'
-  Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDNL_FILE = DATA//trim('/Clfidnl_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit_cl')//'.dat'
-  Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
+  Character(len=*),parameter :: EL_FILE = DATA//trim('/El__cl')//'.dat'
+  Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl__cl')//'.dat'
+  Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNL_FILE = DATA//trim('/Clfidnl__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit__cl')//'.dat'
+  Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl__cl')//'.dat'  
   Character(len=*),parameter :: sBBN_FILE = ROOT_PATH//trim('/')//'class_EFCLASS/bbn/sBBN.dat'  
 
   Character(len=*),parameter :: CLASS_EXECUTABLE = '/home/projects/deaMI/class_EFCLASS'
