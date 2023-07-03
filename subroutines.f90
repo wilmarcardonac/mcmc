@@ -157,7 +157,7 @@ contains
        parameters(4)%mean = 3.039d0 
        parameters(4)%lower_limit = 2.0d0 
        parameters(4)%upper_limit = 4.0d0
-       parameters(4)%sigma = 1.5d--2 
+       parameters(4)%sigma = 1.5d-2 
        parameters(4)%scale = 1.d0
        parameters(4)%latexname = '\ln 10^{10} A_{\rm{s}}'
 
