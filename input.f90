@@ -33,7 +33,7 @@ Module input
   Character(len=*),parameter :: starting_point = 'mean' ! OPTIONS: 'mean','bestfit','random','last_point'
   Character(len=*),parameter :: starting_cov_mat = 'given' !'diagonal' ! OPTIONS: 'diagonal','given'
   
-  Integer*4,parameter :: number_iterations = 150000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
+  Integer*4,parameter :: number_iterations = 20000 ! TOTAL NUMBER OF ITERATIONS IN MCMC RUN
   Integer*4,parameter :: number_of_parameters = 11   ! TOTAL NUMBER OF VARYING PARAMETERS
   Integer*4,parameter :: number_of_prior_parameters = 8 ! NUMBER OF PARAMETERS WITH PRIOR     
   Integer*4,parameter :: UNIT_FILE1 = 80  ! UNIT NUMBER EXECUTION INFORMATION FILE
@@ -51,12 +51,12 @@ Module input
   Integer*4 :: number_rejected_points = 0 ! COUNT POINTS IN PARAMETER SPACE
   Integer*4 :: weight = 1 ! COUNTS NUMBER OF TAKEN STEPS BEFORE MOVING TO A NEW POINT
   Integer*4,parameter    :: jumping_factor_update = 20    ! STEPS TAKEN BEFORE UPDATING JUMPING FACTOR (IF NEEDED)
-  Integer*4,parameter    :: steps_taken_before_definite_run = 0 !10000 !5000!10000!0 ! STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
+  Integer*4,parameter    :: steps_taken_before_definite_run = 18000 !0 STEPS TAKEN BEFORE FREEZING COVARIANCE MATRIX
   Integer*4,parameter    :: covariance_matrix_update = 2000 !5000!10000!0 ! STEPS TAKEN BEFORE UPDATING COVARIANCE MATRIX (IF NEEDED)
   Integer :: status1
   Integer*4,dimension(13) :: buff
   
-  Real*8,parameter       :: step_size_changes = 1.d-2      ! CHANGE IN STEP SIZE
+  Real*8,parameter       :: step_size_changes = 1.d-1      ! CHANGE IN STEP SIZE
   Real*8,dimension(number_of_parameters,number_of_parameters) :: Cov_mat ! COVARIANCE MATRIX
   Real*8,dimension(number_of_parameters) :: old_point, current_point, bestfit_point
   Real*8, allocatable, dimension(:,:) :: Nl, prior_cov, inv_prior_cov ! SHOT NOISE, PRIOR COVARIANCE MATRIX AND ITS INVERSE
@@ -107,7 +107,7 @@ Module input
 
   ! PATHS TO FILES:
 
-  Character(len=*),parameter :: ROOT_PATH = '/home/projects/deaMI/mcmc'
+  Character(len=*),parameter :: ROOT_PATH = '/home/snesseris/wilmar/projects/deaMI/g10l/mcmc'
   Character(len=*),parameter :: OUTPUT = ROOT_PATH//trim('/')//'output'
   Character(len=*),parameter :: CHAINS = ROOT_PATH//trim('/')//'chains'
   Character(len=*),parameter :: DATA = ROOT_PATH//trim('/')//'data'
@@ -125,20 +125,20 @@ Module input
   Character(len=*),parameter :: PRIOR_COVMAT_FILE = COVMAT//trim('/prior_covmat')//'.txt'
   Character(len=*),parameter :: BESTFIT_FILE = BESTFIT//trim('/bestfit')//'.txt'
   Character(len=*),parameter :: INI_FILE = OUTPUT//trim('/')//'file.ini'
-  Character(len=*),parameter :: EL_FILE = DATA//trim('/El_cl')//'.dat'
-  Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl_cl')//'.dat'
-  Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDNL_FILE = DATA//trim('/Clfidnl_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit_cl')//'.dat'
-  Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit_cl')//'.dat'
-  Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl_cl')//'.dat'  
+  Character(len=*),parameter :: EL_FILE = DATA//trim('/El__cl')//'.dat'
+  Character(len=*),parameter :: ELNL_FILE = DATA//trim('/Elnl__cl')//'.dat'
+  Character(len=*),parameter :: CLFID_FILE = DATA//trim('/Clfid__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNL_FILE = DATA//trim('/Clfidnl__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDHALOFIT_FILE = DATA//trim('/Clfidhalofit__cl')//'.dat'
+  Character(len=*),parameter :: CLFIDNLHALOFIT_FILE = DATA//trim('/Clfidnlhalofit__cl')//'.dat'
+  Character(len=*),parameter :: CL_FILE = OUTPUT//trim('/Cl__cl')//'.dat'  
   Character(len=*),parameter :: sBBN_FILE = ROOT_PATH//trim('/')//'class_EFCLASS/bbn/sBBN.dat'  
 
-  Character(len=*),parameter :: CLASS_EXECUTABLE = './class_EFCLASS'
-  Character(len=*),parameter :: HIGH_PRE = './class_EFCLASS/cl_lss_ref.pre'
-  Character(len=*),parameter :: LOW_PRE_G5 = './class_EFCLASS/cl_lss_low_g5.pre'
-  Character(len=*),parameter :: LOW_PRE_T5 = './class_EFCLASS/cl_lss_low_t5.pre'
-  Character(len=*),parameter :: LOW_PRE_G10 = './class_EFCLASS/cl_lss_low_g10.pre'
-  Character(len=*),parameter :: LOW_PRE_T10 = './class_EFCLASS/cl_lss_low_t10.pre'
+  Character(len=*),parameter :: CLASS_EXECUTABLE = '/home/snesseris/wilmar/projects/deaMI/class_EFCLASS'
+  Character(len=*),parameter :: HIGH_PRE = CLASS_EXECUTABLE//trim('/')//'cl_lss_ref.pre'
+  Character(len=*),parameter :: LOW_PRE_G5 = CLASS_EXECUTABLE//trim('/')//'cl_lss_low_g5.pre'
+  Character(len=*),parameter :: LOW_PRE_T5 = CLASS_EXECUTABLE//trim('/')//'cl_lss_low_t5.pre'
+  Character(len=*),parameter :: LOW_PRE_G10 = CLASS_EXECUTABLE//trim('/')//'cl_lss_low_g10.pre'
+  Character(len=*),parameter :: LOW_PRE_T10 = CLASS_EXECUTABLE//trim('/')//'cl_lss_low_t10.pre'
   
 End Module input
