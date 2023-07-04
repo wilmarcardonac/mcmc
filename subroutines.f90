@@ -130,50 +130,50 @@ contains
        call bin_centers_widths_bias()
 
        parameters(1)%name = 'omega_b'
-       parameters(1)%mean = 2.248d-2
+       parameters(1)%mean = 2.250d-2
        parameters(1)%lower_limit = 1.d-3
        parameters(1)%upper_limit = 3.d-2
-       parameters(1)%sigma = 1.3d-4
+       parameters(1)%sigma = 1.4d-4
        parameters(1)%scale = 1.d0
-       parameters(1)%latexname = '\omega_b'
+       parameters(1)%latexname = '\omega_{\rm{b}}'
 
        parameters(2)%name = 'omega_cdm'
-       parameters(2)%mean = 1.189d-1
+       parameters(2)%mean = 1.187d-1
        parameters(2)%lower_limit = 1.d-4
        parameters(2)%upper_limit = 1.d0
        parameters(2)%sigma = 1.d-3
        parameters(2)%scale = 1.d0
-       parameters(2)%latexname = '\omega_{cdm}'
+       parameters(2)%latexname = '\omega_{\rm{cdm}}'
 
        parameters(3)%name = 'n_s'
-       parameters(3)%mean = 9.677d-1
+       parameters(3)%mean = 9.664d-1
        parameters(3)%lower_limit = 9.d-2
        parameters(3)%upper_limit = 2.d0
-       parameters(3)%sigma = 3.4d-3
+       parameters(3)%sigma = 3.9d-3
        parameters(3)%scale = 1.d0
-       parameters(3)%latexname = 'n_s'
+       parameters(3)%latexname = 'n_{\rm{s}}'
 
        parameters(4)%name = 'ln10^{10}A_s'
-       parameters(4)%mean = 3.041d0 !2.12424d-9
-       parameters(4)%lower_limit = 2.0d0 !1.d-11
+       parameters(4)%mean = 3.039d0 
+       parameters(4)%lower_limit = 2.0d0 
        parameters(4)%upper_limit = 4.0d0
-       parameters(4)%sigma = 9.8d-3 !3.82d-11
+       parameters(4)%sigma = 1.5d-2 
        parameters(4)%scale = 1.d0
-       parameters(4)%latexname = '\ln 10^{10} A_s'
+       parameters(4)%latexname = '\ln 10^{10} A_{\rm{s}}'
 
        parameters(5)%name = 'H0'
-       parameters(5)%mean = 6.943d1
+       parameters(5)%mean = 6.989d1
        parameters(5)%lower_limit = 3.d1
        parameters(5)%upper_limit = 9.d1
-       parameters(5)%sigma = 5.3d-1
+       parameters(5)%sigma = 6.35d-1
        parameters(5)%scale = 1.d0
        parameters(5)%latexname = 'H_0'
 
        parameters(6)%name = 'm_ncdm'
-       parameters(6)%mean = 8.7d-2
+       parameters(6)%mean = 8.5d-2
        parameters(6)%lower_limit = 0.d0
        parameters(6)%upper_limit = 5.d0
-       parameters(6)%sigma = 6.9d-2
+       parameters(6)%sigma = 6.6d-2
        parameters(6)%scale = 1.d0
        parameters(6)%latexname = 'm_{\nu}'
 
@@ -187,13 +187,13 @@ contains
 
 !!$       If (number_of_parameters .eq. 10) then
 !!$
-       parameters(8)%name = 'log10cs2_fld'
-       parameters(8)%mean = -5.6d-1
+       parameters(8)%name = 'log10ceff2'
+       parameters(8)%mean = -6.4d-1
        parameters(8)%lower_limit = -1.d1
        parameters(8)%upper_limit = 0.d0
-       parameters(8)%sigma = 4.1d-1
+       parameters(8)%sigma = 5.2d-1
        parameters(8)%scale = 1.d0
-       parameters(8)%latexname = '\log c_s^2'
+       parameters(8)%latexname = '\log_{10} c_{\rm{eff}}^2'
 
 !!$       Else if (number_of_parameters .eq. 11) then
 !!$
@@ -208,26 +208,26 @@ contains
 !!$       End if
 
        parameters(9)%name = 'w0_fld'
-       parameters(9)%mean = -1.1d0
+       parameters(9)%mean = -1.07d0
        parameters(9)%lower_limit = -2.d0
        parameters(9)%upper_limit = -3.d-1
-       parameters(9)%sigma = 3.2d-2
+       parameters(9)%sigma = 3.5d-2
        parameters(9)%scale = 1.d0
        parameters(9)%latexname = 'w'
 
        parameters(10)%name = 'tau_reio'
-       parameters(10)%mean = 5.27d-2
+       parameters(10)%mean = 5.31d-2
        parameters(10)%lower_limit = 4.d-3
        parameters(10)%upper_limit = 8.d-1
-       parameters(10)%sigma = 4.12d-3
+       parameters(10)%sigma = 7.45d-3
        parameters(10)%scale = 1.d0
-       parameters(10)%latexname = '\tau_{reio}'
+       parameters(10)%latexname = '\tau_{\rm{reio}}'
 
        parameters(11)%name = 'e_pi'
-       parameters(11)%mean = 9.6d-3
+       parameters(11)%mean = 1.2d-2
        parameters(11)%lower_limit = -5.d-2
        parameters(11)%upper_limit = 1.d-1
-       parameters(11)%sigma = 1.6d-2
+       parameters(11)%sigma = 1.3d-2
        parameters(11)%scale = 1.d0
        parameters(11)%latexname = 'e_{\pi}'
 
@@ -262,28 +262,28 @@ contains
 !!$       End if
     
        prior_parameters(1)%name = 'omega_b'
-       prior_parameters(1)%mean = 2.248d-2
+       prior_parameters(1)%mean = 2.250d-2
 
        prior_parameters(2)%name = 'omega_cdm'
-       prior_parameters(2)%mean = 1.189d-1
+       prior_parameters(2)%mean = 1.187d-1
 
        prior_parameters(3)%name = 'n_s'
-       prior_parameters(3)%mean = 9.677d-1
+       prior_parameters(3)%mean = 9.664d-1
 
        prior_parameters(4)%name = 'ln10^{10}A_s'
-       prior_parameters(4)%mean = 3.041d0 !2.12424d-9
+       prior_parameters(4)%mean = 3.039d0 
 
        prior_parameters(5)%name = 'H0'
-       prior_parameters(5)%mean = 6.943d1
+       prior_parameters(5)%mean = 6.989d1
 
        prior_parameters(6)%name = 'w0_fld'
-       prior_parameters(6)%mean = -1.1d0
+       prior_parameters(6)%mean = -1.07d0
 
        prior_parameters(7)%name = 'tau_reio'
-       prior_parameters(7)%mean = 5.27d-2
+       prior_parameters(7)%mean = 5.31d-2
 
        prior_parameters(8)%name = 'e_pi'
-       prior_parameters(8)%mean = 9.6d-3
+       prior_parameters(8)%mean = 1.2d-2
 
     Else
 
@@ -1612,7 +1612,7 @@ contains
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfidnl_'
 
-       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+       write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
     Else if (spectra .eq. 'Clfidhalofit') then 
 
@@ -1620,7 +1620,7 @@ contains
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
-       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+       write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
 
     Else if (spectra .eq. 'Clfidnlhalofit') then 
 
@@ -1628,13 +1628,13 @@ contains
 
        write(UNIT_FILE9,'(a20)') 'non linear = halofit'
 
-       write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+       write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
     Else if (spectra .eq. 'Clfid') then
 
        write(UNIT_FILE9,*) 'root = '//trim(DATA)//'/Clfid_'
 
-       write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+       write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
        
     Else if (spectra .eq. 'Cl') then
 
@@ -1642,11 +1642,11 @@ contains
 
        If (lensing) then
 
-          write(UNIT_FILE9,'(a59)') 'number count contributions = density, rsd, lensing, doppler'
+          write(UNIT_FILE9,'(a54)') 'number count contributions = density, rsd, lensing, gr'
 
        Else
 
-          write(UNIT_FILE9,'(a50)') 'number count contributions = density, rsd, doppler'
+          write(UNIT_FILE9,'(a45)') 'number count contributions = density, rsd, gr'
 
        End if
 
@@ -1751,7 +1751,11 @@ contains
 
     write(UNIT_FILE9,'(a17)') 'gauge = newtonian'
 
-    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
+    write(UNIT_FILE9,'(a34,f5.3)') 'perturbations_sampling_stepsize = ', real(0.05) 
+
+    write(UNIT_FILE9,'(a20)') 'overwrite_root = yes'
+    
+!    write(UNIT_FILE9,*) 'sBBN file = ', sBBN_FILE
 
     close(UNIT_FILE9)
 
